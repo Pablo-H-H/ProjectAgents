@@ -3,6 +3,7 @@ from MultiAgentes.imports_to_use import *
 
 from ReadLevel import ReadLevel
 from FireBehaviours import smokePlace, fireAdvance
+from FireFighters import FireFighter
 
 class fireModel(Model):
     def __init__(self,file,W,H,numAgents):
@@ -17,7 +18,7 @@ class fireModel(Model):
         self.mapCoords = [(x,y) for x in range(self.width) for y in range(self.height)]
 
         for i in range(numAgents):
-            agent = fireAgent(i,self)
+            agent = FireFighter(i,self)
             self.schedule.add(agent)
 
 
