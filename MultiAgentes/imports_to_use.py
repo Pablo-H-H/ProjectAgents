@@ -1,5 +1,5 @@
 from mesa import Agent, Model
-from mesa.space import MultiGrid
+from mesa.space import SingleGrid
 from mesa.time import RandomActivation
 from mesa.datacollection import DataCollector
 
