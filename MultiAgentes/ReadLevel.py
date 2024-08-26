@@ -18,8 +18,7 @@ def ReadLevel(filename):
      3 = Wall or door is broken
      4 = Closed door
      5 = Open door
-     6 = Closed entryway
-     7 = Open entryway
+     6 = Entryway
      Wall uses [top, left, bottom, right] """
     # Walls initialization
     temp = content.splitlines()[0:6]
