@@ -1,5 +1,5 @@
-import random
-import numpy as np
+import MultiAgentes.imports_to_use as imports_to_use
+from MultiAgentes.imports_to_use import *
 
 def smokePlace(model):
     placement = [place for place in model.mapCoords if model.mapCoords <= 2]

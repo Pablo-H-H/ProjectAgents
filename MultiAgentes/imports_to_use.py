@@ -1,6 +1,6 @@
 from mesa import Agent, Model
-from mesa.space import SingleGrid
-from mesa.time import RandomActivation
+from mesa.space import MultiGrid
+from mesa.time import BaseScheduler
 from mesa.datacollection import DataCollector
 
 # %matplotlib inline

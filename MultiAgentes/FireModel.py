@@ -1,9 +1,5 @@
-from mesa import Model
-from mesa.datacollection import DataCollector
-from mesa.space import MultiGrid
-from mesa.time import BaseScheduler
-
-import random
+import MultiAgentes.imports_to_use as imports_to_use
+from MultiAgentes.imports_to_use import *
 
 from ReadLevel import ReadLevel
 from FireBehaviours import smokePlace, fireAdvance
@@ -13,7 +9,7 @@ class fireModel(Model):
         super().__init__()
         self.height = W
         self.width = H
-        self.grid = SingleGrid(self.width,self.height,torus=False)
+        self.grid = MultiGrid(self.width,self.height,torus=False)
         self.schedule = BaseScheduler(self)
         self.walls, self.points, self.smoke = ReadLevel(filename=file)
         self.datacollector = DataCollector(model_reporters={"Grid":get_grid})
