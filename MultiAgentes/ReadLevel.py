@@ -3,7 +3,8 @@
     the points of interest, and the fire points (in said order)
  """
 
-import numpy as np
+import MultiAgentes.imports_to_use as imports_to_use
+from MultiAgentes.imports_to_use import *
 
 def ReadLevel(filename):
     w, h = 8,6
