@@ -22,7 +22,7 @@ def smokePlace(model):
 
     # If smoke gets to 3 initiate explosion/shockwave
     if model.smoke[loc] >= 3:
-        shockWave(model,loc)
+        shockWave(model,loc,dirH,dirV)
         model.smoke[loc] = 2    # Update to regular fire value
 
 
@@ -36,39 +36,36 @@ def findNeighbor(model,loc):
     return neighbor
 
 
-def shockWave(model,loc):
+def shockWave(model,loc,dirX,dirY):
     x, y = loc[0], loc[1]
+    dir = len(dirX)
 
-    # All possible directions for fire to travel in
-    dir = 4
-    dirX = dirH
-    dirY = dirV
+    # I need to do something here that can recognize which direction the wall is even if dir is not of length 4.
+    # if model.smoke == 3:
+        # for i in range(4):
+        #     if model.walls[x][y][i] > 0 or model.walls[x][y][i] <= 2:
+        #         model.walls[x][y][i] += 1 # Damage or break walls around original explosion
+        #         dir -= 1
+        #         dirX.pop(i)
+        #         dirY.pop(i)
 
-    if model.smoke == 3:
-        for i in range(dir):
-            if model.walls[x][y][i] > 0 or model.walls[x][y][i] <= 2:
-                model.walls[x][y][i] += 1 # Damage or break walls around original explosion
-                dir -= 1
-                dirX.pop(i)
-                dirY.pop(i)
-
-            elif model.walls[x][y][i] == 4:
-                model.walls[x][y][i] = 3  # Destroy a closed door
-                dir -= 1
-                dirX.pop(i)
-                dirY.pop(i)
+        #     elif model.walls[x][y][i] == 4:
+        #         model.walls[x][y][i] = 3  # Destroy a closed door
+        #         dir -= 1
+        #         dirX.pop(i)
+        #         dirY.pop(i)
             
-            elif model.walls[x][y][i] == 5:
-                model.walls[x][y][i] = 3  # Destroy an open door but do not remove from explosion direction
-            
+        #     elif model.walls[x][y][i] == 5:
+        #         model.walls[x][y][i] = 3  # Destroy an open door but do not remove from explosion direction
+
+    if range(dir) != 0:    
         for i in range(dir):
+            newLoc = loc + (dirX[i], dirY[i])
             if model.smoke[loc + (dirX[i], dirY[i])] == 2:
-                shockAdvance(model,loc,(dirX[i], dirY[i]))    # Continue shockwave if fire
+                shockWave(model, newLoc, dirX[i], dirY[i])     # Continue shockwave if fire
             else:
-                model.smoke[loc + (dirX[i], dirY[i])] = 2
-
-def shockAdvance(model,loc,dir): # This should be approx the same as above
-    return 0
+                model.smoke[newLoc] = 2
+    else: pass
 
 # Using BFS on the smoke group we 
 def flashOver(model,loc):
