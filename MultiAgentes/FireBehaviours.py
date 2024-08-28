@@ -9,11 +9,11 @@ def smokePlace(model):
 
     # If smoke gets to 2 initiate possible flashpoint
     if model.smoke[loc] == 2 and model.smoke[neighbor] == 1:
-        flashOver()
+        flashOver(model,loc)
     # Otherwise if the neighbor is already a fire change to fire and initiate possible flashpoint
     elif model.smoke[loc] == 1 and model.smoke[neighbor] == 2:
         model.smoke[loc] = 2    # Update to regular fire value
-        flashOver()
+        flashOver(model,loc)
 
     # If smoke gets to 3 initiate explosion/shockwave
     if model.smoke[loc] >= 3:
@@ -54,5 +54,18 @@ def shockWave(model,loc):
 def shockAdvance(model,origin,dir): # This should be approx the same as above
     return 0
 
-def flashOver(model):
-    return 0
+def flashOver(model,loc):
+    # Probably best to use a simple BFS to target all the cells that are connected
+    visited = [[False for x in range(model.width)] for y in range(model.height)]
+    startX, startY = loc[0], loc[1]
+    q = [(startX,startY)]
+    group = []
+    dirH = [1, 0, 0, -1]
+    dirV = [0, 1, -1, 0]
+
+    while q:
+        x,y = q.pop(0)
+        if visited[x][y]:
+            continue
+
+        visited[x][y] = True

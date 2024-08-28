@@ -14,7 +14,7 @@ class FireFighter(Agent):
 
     def save_people(self):
         self.action_points -= 2
-        self.carryngvictim = True
+        self.carryingvictim = True
 
     def remove_smoke(self):
         self.action_points -= 1
