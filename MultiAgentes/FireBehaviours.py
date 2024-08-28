@@ -35,7 +35,10 @@ def findNeighbor(model,loc):
     
     return neighbor
 
-
+# Recursive shockwave function.
+# For each direction it checks if there is something blocking (wall or closed door) and damages it.
+# If there is a direction that has a wall that direction is removed from the list of directions
+# Next cell is only passed on one of the directions to continue recursive function.
 def shockWave(model,loc,dirX,dirY):
     x, y = loc[0], loc[1]
     dir = len(dirX)
@@ -61,11 +64,11 @@ def shockWave(model,loc,dirX,dirY):
     if range(dir) != 0:    
         for i in range(dir):
             newLoc = loc + (dirX[i], dirY[i])
-            if model.smoke[loc + (dirX[i], dirY[i])] == 2:
+            if model.smoke[newLoc] == 2:
                 shockWave(model, newLoc, dirX[i], dirY[i])     # Continue shockwave if fire
             else:
                 model.smoke[newLoc] = 2
-    else: pass
+    return 0
 
 # Using BFS on the smoke group we 
 def flashOver(model,loc):
