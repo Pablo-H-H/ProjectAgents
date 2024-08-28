@@ -6,35 +6,72 @@ class FireFighter(Agent):
         self.pos = pos
         self.action_points = 4
         self.carryng_victim = False
-    def reveal_point():
-        pass
+    def reveal_point(self):
+        x, y = self.pos
+        poi = self.model.PoI[x, y]
+        if poi == 1:  # es una víctima
+            print("Víctima encontrada en posición:", self.pos)
+            self.save_people()
+        elif poi == 2:  # es una falsa alarma
+            print("Falsa alarma en posición:", self.pos)
+            # Remover la falsa alarma del mapa
+            self.model.PoI[x, y] = 0
 
     def open_door(self):
         self.action_points -= 1
 
     def save_people(self):
-        self.action_points -= 2
-        self.carryngvictim = True
+        if not self.carrying_victim:
+            self.carrying_victim = True
+            self.action_points -= 2
+            print("Víctima recogida por bombero", self.unique_id)
 
     def remove_smoke(self):
-        self.action_points -= 1
+        x, y = self.pos
+        if self.model.smoke[x, y] == 1: 
+            self.model.smoke[x, y] = 0
+            self.action_points -= 1
+            print("Humo removido en", self.pos)
 
     def flip_fire_to_smoke(self):
-        self.action_points -= 1
+        x, y = self.pos
+        if self.model.smoke[x, y] == 2:  
+            self.model.smoke[x, y] = 1  
+            self.action_points -= 1
 
     def extinguish_fire(self):
-        self.action_points -= 2
+        x, y = self.pos
+        if self.model.smoke[x, y] == 2: 
+            self.model.smoke[x, y] = 0  
+            self.action_points -= 2
 
     def damage_wall(self):
         self.action_points -= 1
 
-    #Add 1 damage market 
     def chop_wall(self):
         self.action_points -= 2
 
     def move(self):
-        x, y = self.pos
-        possible_movement = self.model.grid.get_neighborhood(self.pos, moore=False, include_center=False)
+        dx, dy = direction
+        new_pos = (self.pos[0] + dx, self.pos[1] + dy)
+        if self.model.grid.in_bounds(new_pos) and self.action_points > 0:
+            self.pos = new_pos
+            self.action_points -= 1  
+            print("Bombero se movió a", new_pos)
 
     def step(self):
-        pass
+        # Obtener la posicion de los POI
+
+        # Realizar movimiento hacia el POI mas cercano
+
+        # Si hay un humo en la celda en el camino, removerlo
+
+        # Si hay fuego en la celda en el camino, extinguirlo
+
+        # Si en el camino a la victima es igual de costoso que romper una para para llegar a la victima, romper la pared
+
+        # Revelar la celda
+
+        # Si La celda revelada es una victima, salvarla
+
+        # Si la celda revelada es una falsa alarma, obtener un nuevo POI
