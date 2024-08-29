@@ -1,13 +1,16 @@
 import imports_to_use as imports_to_use
 from imports_to_use import *
 
-
-
 def smokePlace(model):
+    global dirH, dirV
+    dirH = [0, -1, 0, 1]
+    dirV = [1, 0, -1, 0]
+
     placement = [place for place in model.mapCoords if model.mapCoords <= 2]
     loc = random.choice(placement)
     model.smoke[loc] += 1
-    neighbor = 0
+
+    neighbor = findNeighbor(model,loc)
 
     # If smoke gets to 2 initiate possible flashpoint
     if model.smoke[loc] == 2 and model.smoke[neighbor] == 1:
@@ -19,46 +22,53 @@ def smokePlace(model):
 
     # If smoke gets to 3 initiate explosion/shockwave
     if model.smoke[loc] >= 3:
-        shockWave(model,loc)
+        shockWave(model,loc,dirH,dirV)
         model.smoke[loc] = 2    # Update to regular fire value
 
 
-def shockWave(model,loc):
-    # All possible directions for fire to travel in
-    directions = 4    
-    dirH = [0, -1, 0, 1]
-    dirV = [1, 0, -1, 0]
+def findNeighbor(model,loc):
+    x, y = loc[0], loc[1]
+    neighbor = []
+    for i in range(4):
+        if model.walls[x][y][i] == 0 or model.walls[x][y][i] == 3 or model.walls[x][y][i] == 5:
+            neighbor.append((x,y))
+    
+    return neighbor
 
-    if model.smoke == 3:
-        for i in range(directions):
-            if model.walls[loc[0]][loc[1]][i] > 0 or model.walls[loc[0]][loc[1]][i] <= 2:
-                model.walls[loc[0]][loc[1]][i] += 1 # Damage or break walls around original explosion
-                directions -= 1
-                dirH.pop(i)
-                dirV.pop(i)
 
-            elif model.walls[loc[0]][loc[1]][i] == 4:
-                model.walls[loc[0]][loc[1]][i] = 3  # Destroy a closed door
-                directions -= 1
-                dirH.pop(i)
-                dirV.pop(i)
+def shockWave(model,loc,dirX,dirY):
+    x, y = loc[0], loc[1]
+    dir = len(dirX)
+
+    # I need to do something here that can recognize which direction the wall is even if dir is not of length 4.
+    # if model.smoke == 3:
+        # for i in range(4):
+        #     if model.walls[x][y][i] > 0 or model.walls[x][y][i] <= 2:
+        #         model.walls[x][y][i] += 1 # Damage or break walls around original explosion
+        #         dir -= 1
+        #         dirX.pop(i)
+        #         dirY.pop(i)
+
+        #     elif model.walls[x][y][i] == 4:
+        #         model.walls[x][y][i] = 3  # Destroy a closed door
+        #         dir -= 1
+        #         dirX.pop(i)
+        #         dirY.pop(i)
             
-            elif model.walls[loc[0]][loc[1]][i] == 5:
-                model.walls[loc[0]][loc[1]][i] = 3  # Destroy an open door but do not remove from explosion direction
-            
-        for i in range(directions):
-            if model.smoke[loc + (dirH[i], dirV[i])] == 2:
-                shockAdvance(model,loc,(dirH[i], dirV[i]))    # Continue shockwave if fire
+        #     elif model.walls[x][y][i] == 5:
+        #         model.walls[x][y][i] = 3  # Destroy an open door but do not remove from explosion direction
+
+    if range(dir) != 0:    
+        for i in range(dir):
+            newLoc = loc + (dirX[i], dirY[i])
+            if model.smoke[loc + (dirX[i], dirY[i])] == 2:
+                shockWave(model, newLoc, dirX[i], dirY[i])     # Continue shockwave if fire
             else:
-                model.smoke[loc + (dirH[i], dirV[i])] = 2
-
-def shockAdvance(model,origin,dir): # This should be approx the same as above
-    return 0
+                model.smoke[newLoc] = 2
+    else: pass
 
 # Using BFS on the smoke group we 
 def flashOver(model,loc):
-    dirH = [0, -1, 0, 1]
-    dirV = [1, 0, -1, 0]
     visited = [[False for x in range(model.width)] for y in range(model.height)]
     startX, startY = loc[0], loc[1]
     q = [(startX,startY)]
