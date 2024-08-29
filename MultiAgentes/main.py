@@ -3,4 +3,4 @@ from FireModel import fireModel
 
 file = "./TestLevel.txt"
 walls, PoI, smoke = ReadLevel(file)
-print(PoI)
+print(smoke)

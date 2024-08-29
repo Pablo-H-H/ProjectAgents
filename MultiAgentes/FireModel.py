@@ -1,8 +1,8 @@
-import MultiAgentes.imports_to_use as imports_to_use
-from MultiAgentes.imports_to_use import *
+import imports_to_use as imports_to_use
+from imports_to_use import *
 
 from ReadLevel import ReadLevel
-from FireBehaviours import smokePlace, fireAdvance
+from FireBehaviours import smokePlace
 from FireFighters import FireFighter
 
 class fireModel(Model):
@@ -26,7 +26,6 @@ class fireModel(Model):
         self.datacollector.collect(self)
         self.schedule.step()
         smokePlace(self)
-        fireAdvance(self)
 
 
 def get_grid():
