@@ -8,8 +8,8 @@ from FireFighters import FireFighter
 class fireModel(Model):
     def __init__(self,file,W,H,numAgents):
         super().__init__()
-        self.height = W
-        self.width = H
+        self.height = H
+        self.width = W
         self.grid = MultiGrid(self.width,self.height,torus=False)
         self.schedule = BaseScheduler(self)
         self.walls, self.points, self.smoke = ReadLevel(filename=file)
@@ -18,12 +18,14 @@ class fireModel(Model):
         self.mapCoords = [(x,y) for x in range(self.width) for y in range(self.height)]
 
         for i in range(numAgents):
-            agent = FireFighter(i,self)
+            start = [cell for cell in self.mapCoords if np.any(self.walls[cell[1]][cell[0]] == 6)]
+            pos = random.choice(start)
+            agent = FireFighter(i,self,pos)
             self.schedule.add(agent)
 
 
     def step(self):
-        self.datacollector.collect(self)
+        # self.datacollector.collect(self)
         self.schedule.step()
         smokePlace(self)
 

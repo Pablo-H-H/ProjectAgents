@@ -73,3 +73,4 @@ class FireFighter(Agent):
         # Si La celda revelada es una victima, salvarla
 
         # Si la celda revelada es una falsa alarma, obtener un nuevo POI
+        return 0
