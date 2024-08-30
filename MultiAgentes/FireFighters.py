@@ -102,4 +102,23 @@ class FireFighter(Agent):
             self.action_points -= move_cost
 
     def step(self):
+<<<<<<< HEAD
         pass
+=======
+        # Obtener la posicion de los POI
+
+        # Realizar movimiento hacia el POI mas cercano
+
+        # Si hay un humo en la celda en el camino, removerlo
+
+        # Si hay fuego en la celda en el camino, extinguirlo
+
+        # Si en el camino a la victima es igual de costoso que romper una para para llegar a la victima, romper la pared
+
+        # Revelar la celda
+
+        # Si La celda revelada es una victima, salvarla
+
+        # Si la celda revelada es una falsa alarma, obtener un nuevo POI
+        return 0
+>>>>>>> ee4dc63621ae250c207bf8fee48435c8f6a9b7d7

@@ -6,32 +6,34 @@ def smokePlace(model):
     dirH = [0, -1, 0, 1]
     dirV = [1, 0, -1, 0]
 
-    placement = [place for place in model.mapCoords if model.mapCoords <= 2]
-    loc = random.choice(placement)
-    model.smoke[loc] += 1
+    placement = [place for place in model.mapCoords if model.smoke[place[1]][place[0]] <= 2]
+    (x,y) = random.choice(placement)
+    print((x,y))
+    model.smoke[y][x] += 1
 
-    neighbor = findNeighbor(model,loc)
+    neighbor = findNeighbor(model,x,y)
 
     # If smoke gets to 2 initiate possible flashpoint
-    if model.smoke[loc] == 2 and model.smoke[neighbor] == 1:
-        flashOver(model,loc)
+    if model.smoke[y][x] == 2 and np.any(model.smoke[neighbor] == 1):
+        flashOver(model,x,y)
     # Otherwise if the neighbor is already a fire change to fire and initiate possible flashpoint
-    elif model.smoke[loc] == 1 and model.smoke[neighbor] == 2:
-        model.smoke[loc] = 2    # Update to regular fire value
-        flashOver(model,loc)
+    elif model.smoke[y][x] == 1 and np.any(model.smoke[neighbor] == 2):
+        model.smoke[y][x] = 2    # Update to regular fire value
+        flashOver(model,x,y)
 
     # If smoke gets to 3 initiate explosion/shockwave
-    if model.smoke[loc] >= 3:
-        shockWave(model,loc,dirH,dirV)
-        model.smoke[loc] = 2    # Update to regular fire value
+    if model.smoke[y][x] >= 3:
+        shockWave(model,x,y,dirH,dirV)
+        model.smoke[y][x] = 2    # Update to regular fire value
 
 
-def findNeighbor(model,loc):
-    x, y = loc[0], loc[1]
+def findNeighbor(model,x,y):
     neighbor = []
-    for i in range(4):
-        if model.walls[x][y][i] == 0 or model.walls[x][y][i] == 3 or model.walls[x][y][i] == 5:
-            neighbor.append((x,y))
+    cells = model.grid.get_neighborhood((x,y), moore = False, include_center = False)
+    for i in range(len(cells)):
+        for j in range(4):
+            if model.walls[cells[i]][j] == 0 or model.walls[cells[i]][j] == 3 or model.walls[cells[i]][j] == 5:
+                neighbor.append(cells[i])
     
     return neighbor
 
@@ -39,56 +41,58 @@ def findNeighbor(model,loc):
 # For each direction it checks if there is something blocking (wall or closed door) and damages it.
 # If there is a direction that has a wall that direction is removed from the list of directions
 # Next cell is only passed on one of the directions to continue recursive function.
-def shockWave(model,loc,dirX,dirY):
-    x, y = loc[0], loc[1]
+def shockWave(model,x,y,dirH,dirV):
+    dirX = dirH
+    dirY = dirV
+
     dir = len(dirX)
 
     # I need to do something here that can recognize which direction the wall is even if dir is not of length 4.
-    # if model.smoke == 3:
-        # for i in range(4):
-        #     if model.walls[x][y][i] > 0 or model.walls[x][y][i] <= 2:
-        #         model.walls[x][y][i] += 1 # Damage or break walls around original explosion
-        #         dir -= 1
-        #         dirX.pop(i)
-        #         dirY.pop(i)
-
-        #     elif model.walls[x][y][i] == 4:
-        #         model.walls[x][y][i] = 3  # Destroy a closed door
-        #         dir -= 1
-        #         dirX.pop(i)
-        #         dirY.pop(i)
-            
-        #     elif model.walls[x][y][i] == 5:
-        #         model.walls[x][y][i] = 3  # Destroy an open door but do not remove from explosion direction
-
-    if range(dir) != 0:    
+    if model.smoke[y][x] == 3:
         for i in range(dir):
-            newLoc = loc + (dirX[i], dirY[i])
-            if model.smoke[newLoc] == 2:
-                shockWave(model, newLoc, dirX[i], dirY[i])     # Continue shockwave if fire
+            if model.walls[y][x][i] > 0 or model.walls[y][x][i] <= 2:
+                model.walls[y][x][i] += 1 # Damage or break walls around original explosion
+                dir -= 1
+                dirX[i] = None
+                dirY[i] = None
+
+            elif model.walls[y][x][i] == 4:
+                model.walls[y][x][i] = 3  # Destroy a closed door
+                dirX[i] = None
+                dirY[i] = None
+            
+            elif model.walls[y][x][i] == 5:
+                model.walls[y][x][i] = 3  # Destroy an open door but do not remove from explosion direction
+
+ 
+    for i in range(dir):
+        if dirX[i] != None and dirY[i] != None:
+            newLoc = (x,y) + (dirX[i], dirY[i])
+            if model.smoke[newLoc[1]][newLoc[0]] == 2:
+                shockWave(model, newLoc[0], newLoc[1], dirX, dirY)     # Continue shockwave if fire
             else:
                 model.smoke[newLoc] = 2
     return 0
 
 # Using BFS on the smoke group we 
-def flashOver(model,loc):
+def flashOver(model,x,y):
     visited = [[False for x in range(model.width)] for y in range(model.height)]
-    startX, startY = loc[0], loc[1]
+    startX, startY = x,y
     q = [(startX,startY)]
     smokeGroup = []
 
     while q:
         x,y = q.pop(0)
-        if visited[x][y]:
+        if visited[y][x]:
             continue
 
-        visited[x][y] = True
+        visited[y][x] = True
         smokeGroup.append((x,y))
-        model.smokes[x][y] += 1
+        model.smoke[y][x] += 1
 
         for i in range(4):
             newX, newY = x + dirH[i], y + dirV[i]
-            if (model.walls[x][y][i] == 0 or model.walls[x][y][i] == 3 or model.walls[x][y][i] == 5) and model.smokes == 1:
-                if not visited[newX][newY]:
+            if (model.walls[y][x][i] == 0 or model.walls[y][x][i] == 3 or model.walls[y][x][i] == 5) and model.smoke[y][x] == 1:
+                if not visited[newY][newX]:
                     q.append((newX,newY))
             else: continue
