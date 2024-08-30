@@ -59,25 +59,72 @@ class FireFighter(Agent):
                 self.action_points -= 2 # Save a victim costs 2 AP
                 print("Victim saved at", self.pos)
 
-    def remove_smoke(self):
+    def remove_smoke(self, target_position):
         if self.action_points >= 1:
-            self.action_points -= 1
+            x, y = target_position 
+            # Verify if the target position is a smoke cell
+            if self.model.smoke[x][y] == 1:
+                self.model.smoke[x][y] = 0 # Remove the smoke from the grid
+                self.action_points -= 1 # Remove smoke costs 1 AP
+                print("Smoke removed at", target_position)
 
-    def flip_fire_to_smoke(self):
+    def flip_fire_to_smoke(self, target_position):
         if self.action_points >= 1:
-            self.action_points -= 1
+            x, y = target_position
+            #Verify if the target position is a fire cell
+            if self.model.smoke[x][y] == 2:
+                self.model.smoke[x][y] = 1 # Change the fire cell to a smoke cell
+                self.action_points -= 1 # Flip fire to smoke costs 1 AP
+                print("Fire flipped to smoke at", target_position)
 
-    def extinguish_fire(self):
+    def extinguish_fire(self, target_position):
         if self.action_points >= 2:
-            self.action_points -= 2
+            x, y = target_position
+            #Verify if the target position is a fire cell
+            if self.model.smoke[x][y] == 2:
+                self.model.smoke[x][y] = 0 # Remove the fire from the grid
+                self.action_points -= 2 # Extinguish fire costs 2 AP
+                print("Fire extinguished at", target_position)
 
-    def damage_wall(self):
+    def damage_wall(self, wall_position):
         if self.action_points >= 2:
-            self.action_points -=2
+            x, y = wall_position
+            # Determinate the direction of the wall to damage
+            direction = None
+            if x == self.pos[0] - 1 and y == self.pos[1]:
+                direction = 0  # wall at the north
+            elif x == self.pos[0] and y == self.pos[1] - 1:
+                direction = 1  # wall at the west
+            elif x == self.pos[0] + 1 and y == self.pos[1]:
+                direction = 2  # wall at the south
+            elif x == self.pos[0] and y == self.pos[1] + 1:
+                direction = 3  # wall at the east
 
-    def brake_wall(self):
+            # If the direction is valid and the wall is not broken, damage it
+            if direction is not None and self.model.walls[self.pos[0]][self.pos[1]][direction] == 1:
+                self.model.walls[self.pos[0]][self.pos[1]][direction] = 2  # Damage the wall
+                self.action_points -= 2  # Damage a wall costs 2 AP
+                print(f"Wall damaged at {wall_position}")
+
+    def brake_wall(self, wall_position):
         if self.action_points >= 4:
-            self.action_points -= 4
+            x, y = wall_position
+            # Determinate the direction of the wall to brake
+            direction = None
+            if x == self.pos[0] - 1 and y == self.pos[1]:
+                direction = 0  # wall at the north
+            elif x == self.pos[0] and y == self.pos[1] - 1:
+                direction = 1  # wall at the west
+            elif x == self.pos[0] + 1 and y == self.pos[1]:
+                direction = 2  # wall at the south
+            elif x == self.pos[0] and y == self.pos[1] + 1:
+                direction = 3  # wall at the east
+
+            # If the direction is valid and the wall is damaged, brake it
+            if direction is not None and self.model.walls[self.pos[0]][self.pos[1]][direction] == 2:
+                self.model.walls[self.pos[0]][self.pos[1]][direction] = 3  # Romper la pared
+                self.action_points -= 4  # Romper una pared cuesta 4 AP
+                print(f"Wall broken at {wall_position}")
 
     def move(self, new_position):
         move_cost = 1  
@@ -102,23 +149,4 @@ class FireFighter(Agent):
             self.action_points -= move_cost
 
     def step(self):
-<<<<<<< HEAD
         pass
-=======
-        # Obtener la posicion de los POI
-
-        # Realizar movimiento hacia el POI mas cercano
-
-        # Si hay un humo en la celda en el camino, removerlo
-
-        # Si hay fuego en la celda en el camino, extinguirlo
-
-        # Si en el camino a la victima es igual de costoso que romper una para para llegar a la victima, romper la pared
-
-        # Revelar la celda
-
-        # Si La celda revelada es una victima, salvarla
-
-        # Si la celda revelada es una falsa alarma, obtener un nuevo POI
-        return 0
->>>>>>> ee4dc63621ae250c207bf8fee48435c8f6a9b7d7
