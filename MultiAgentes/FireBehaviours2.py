@@ -28,21 +28,10 @@ def smokePlace(model):
 
 
 def findNeighbor(model,x,y):
-    nX, nY = dirH, dirV
     neighbor = []
-
-    if y == 0:
-        nY[0] = 0
-    if x == 0:
-        nX[1] = 0
-    if y == 5:
-        nY[2] = 0
-    if x == 7:
-        nX[3] = 0
-
     for i in range(4):
-        newX, newY = x + nX[i], y + nY[i]
-        if (model.walls[newY][newX][i] == 0 or model.walls[newY][newX][i] == 3 or model.walls[newY][newX][i] == 5) and ((x,y) != (newX,newY)):
+        newX, newY = x + dirH[i], y + dirV[i]
+        if model.walls[newY][newX][i] == 0 or model.walls[newY][newX][i] == 3 or model.walls[newY][newX][i] == 5:
             neighbor.append((newX,newY))
     return neighbor
 
