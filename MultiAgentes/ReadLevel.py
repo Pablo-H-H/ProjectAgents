@@ -26,7 +26,6 @@ def ReadLevel(filename):
     for i in range(len(temp)):
         temp[i] = temp[i].split()
         for j in range(len(temp[i])):
-            temp[i][j] = [*temp[i][j]]
             temp[i][j] = [int(x) for x in temp[i][j]]
     walls = np.array(temp)
 
@@ -34,31 +33,29 @@ def ReadLevel(filename):
     temp = content.splitlines()[19:27]
     for i in range(len(temp)):
         temp[i] = temp[i].split()
-        for j in range(len(temp[i])):
-            temp[i][j] = [*temp[i][j]]
-            temp[i][j] = [int(x) for x in temp[i][j]]
-        if temp[i][0][0] < temp[i][2][0]:
-            walls[temp[i][0][0]-1][temp[i][1][0]-1][0] = 4
-            walls[temp[i][2][0]-1][temp[i][3][0]-1][2] = 4
-        elif temp[i][1][0] < temp[i][3][0]:
-            walls[temp[i][0][0]-1][temp[i][1][0]-1][3] = 4
-            walls[temp[i][2][0]-1][temp[i][3][0]-1][1] = 4
+        coords = [[int(x) for x in pair] for pair in temp[i]]
+        x1, y1, x2, y2 = coords[0][0], coords[1][0], coords[2][0], coords[3][0]
+        if 0 < x1 <= h and 0 < x2 <= h and 0 < y1 <= w and 0 < y2 <= w:
+            if x1 < x2:
+                walls[x1-1][y1-1][2] = 4
+                walls[x2-1][y2-1][0] = 4
+            elif y1 < y2:
+                walls[x1-1][y1-1][3] = 4
+                walls[x2-1][y2-1][1] = 4
 
     # Entryways initialization
     temp = content.splitlines()[27:31]
     for i in range(len(temp)):
         temp[i] = temp[i].split()
-        for j in range(len(temp[i])):
-            temp[i][j] = [*temp[i][j]]
-            temp[i][j] = [int(x) for x in temp[i][j]]
-        if temp[i][1][0] == 1:
-            walls[temp[i][0][0]-1,temp[i][1][0]-1][1] = 6
-        elif temp[i][1][0] == 8:
-            walls[temp[i][0][0]-1,temp[i][1][0]-1][3] = 6
-        elif temp[i][0][0] == 1:
-            walls[temp[i][0][0]-1,temp[i][1][0]-1][0] = 6
-        elif temp[i][0][0] == 6:
-            walls[temp[i][0][0]-1,temp[i][1][0]-1][2] = 6
+        x, y = int(temp[i][0][0]), int(temp[i][1][0])
+        if y == 1:
+            walls[x-1][y-1][1] = 6
+        elif y == 8:
+            walls[x-1][y-1][3] = 6
+        elif x == 1:
+            walls[x-1][y-1][0] = 6
+        elif x == 6:
+            walls[x-1][y-1][2] = 6
 
     """ PoI has characteristics:
      0 = nothing there
@@ -82,12 +79,10 @@ def ReadLevel(filename):
      2 = fire on cell
      3 = initialize flash point explosion """
     temp = content.splitlines()[9:19]
-    fires = np.zeros((h,w),dtype = int)
+    fires = np.zeros((h, w), dtype=int)
     for i in range(len(temp)):
         temp[i] = temp[i].split()
-        for j in range(len(temp[i])):
-            temp[i][j] = [*temp[i][j]]
-            temp[i][j] = [int(x) for x in temp[i][j]]
-        fires[temp[i][0][0]-1,temp[i][1][0]-1] = 2
+        x, y = int(temp[i][0][0]), int(temp[i][1][0])
+        fires[x-1, y-1] = 2
     
     return walls, PoI, fires
