@@ -54,24 +54,32 @@ def shockWave(model,x,y,nX,nY):
             if (dirX[i] is not None) and (dirY[i] is not None):
                 print(f"Checking direction {i} from ({x}, {y})")            
                 wallStatus = model.walls[y][x][i]
+                opposite = (i + 2) % 4  # Opposite direction of shockwave
+
                 if wallStatus in [1,2]:
                     model.walls[y][x][i] += 1 # Damage or break walls around original explosion
+                    if (0 <= x + dirX[i] < model.width) and (0 <= y + dirY[i] < model.height):
+                        model.walls[y + dirY[i]][x + dirX[i]][opposite] += 1 # Destroy in opposite
                     print(f"Damaged wall at ({x}, {y}) in direction {i}")
-                    print(model.walls[y][x])
+                    print(f"{model.walls[y][x]}, {model.walls[y + dirY[i]][x + dirX[i]]}")
                     dirX[i] = None
                     dirY[i] = None
 
                 elif wallStatus == 4:
                     model.walls[y][x][i] = 3  # Destroy a closed door
+                    if (0 <= x + dirX[i] < model.width) and (0 <= y + dirY[i] < model.height):
+                        model.walls[y + dirY[i]][x + dirX[i]][opposite] = 3 # Destroy in opposite
                     print(f"Destroyed closed door at ({x}, {y}) in direction {i}")
-                    print(model.walls[y][x])
+                    print(f"{model.walls[y][x]}, {model.walls[y + dirY[i]][x + dirX[i]]}")
                     dirX[i] = None
                     dirY[i] = None
                 
                 elif wallStatus == 5:
                     model.walls[y][x][i] = 3  # Destroy an open door but do not remove from explosion direction
+                    if (0 <= x + dirX[i] < model.width) and (0 <= y + dirY[i] < model.height):
+                        model.walls[y + dirY[i]][x + dirX[i]][opposite] += 1 # Destroy in opposite
                     print(f"Destroyed open door at ({x}, {y}) in direction {i}")
-                    print(model.walls[y][x])
+                    print(f"{model.walls[y][x]}, {model.walls[y + dirY[i]][x + dirX[i]]}")
 
                 if dirX[i] is not None and dirY[i] is not None:
                     newX, newY = x + dirX[i], y + dirY[i]
@@ -83,10 +91,12 @@ def shockWave(model,x,y,nX,nY):
                             tempDirX[i], tempDirY[i] = dirX[i], dirY[i]
                             print(f"{tempDirX}, {tempDirY}")
                             shockWave(model, newX, newY, tempDirX, tempDirY)     # Continue shockwave if fire
+
                         elif model.smoke[newY][newX] in [0, 1]:
                             model.smoke[newY][newX] = 2
                             print(f"Set fire at ({newX}, {newY})")
                             flashOver(model, newX, newY)
+
                         else:
                             print(f"Out of bounds: ({newX},{newY})")
 
