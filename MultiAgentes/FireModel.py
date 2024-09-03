@@ -45,10 +45,6 @@ class fireModel(Model):
             pos = random.choice(start)
             agent = FireFighter(i,self,pos)
             self.schedule.add(agent)
-        
-        print("Walls")
-        print(self.walls[0])
-        print("\nFin de Walls")
 
 
     def step(self):
