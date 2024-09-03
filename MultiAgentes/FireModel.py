@@ -2,7 +2,7 @@ import imports_to_use as imports_to_use
 from imports_to_use import *
 
 from ReadLevel import ReadLevel
-from FireBehaviours import smokePlace
+from FireBehaviours2 import smokePlace
 from FireFighters import FireFighter
 
 class fireModel(Model):
