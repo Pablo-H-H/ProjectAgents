@@ -4,19 +4,37 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEditor;
 using UnityEngine;
+using System.IO;
 using UnityEngine.Networking;
+using System.Linq;
+
+using Debug = UnityEngine.Debug;
+using System.Collections.Specialized;
 
 public class WebClient : MonoBehaviour
 {
-    // IEnumerator - yield return
-    IEnumerator SendData(string data)
+
+	string jsonString;
+    public GameObject pared;
+    public GameObject puerta;
+	public GameObject amarillo;
+	//public Quaternion rotacion;
+	public Vector3 pos;
+	int[,,] pos_Paredes;
+
+	Class_Paredes paredes_lista;
+
+	// IEnumerator - yield return
+	IEnumerator SendData(string data)
     {
-        WWWForm form = new WWWForm();
+		WWWForm form = new WWWForm();
         form.AddField("bundle", "the data");
         string url = "http://localhost:8585";
-        using (UnityWebRequest www = UnityWebRequest.Post(url, form))
+
+		using (UnityWebRequest www = UnityWebRequest.Post(url, form))        
         {
             byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(data);
             www.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
@@ -31,15 +49,20 @@ public class WebClient : MonoBehaviour
             }
             else
             {
-                Debug.Log(www.downloadHandler.text);    // Answer from Python
-                //Vector3 tPos = JsonUtility.FromJson<Vector3>(www.downloadHandler.text.Replace('\'', '\"'));
-                //Debug.Log("Form upload complete!");
-                //Debug.Log(tPos);
-            }
-        }
+                jsonString = www.downloadHandler.text.Replace('\'', '\"');
+
+				paredes_lista = JsonUtility.FromJson<Class_Paredes>(jsonString);
+
+				//var resultado = (from lista in paredes_lista.Paredes select lista);
+
+				string paredes_string = JsonUtility.ToJson(paredes_lista);
+
+				Invoke("Generar_Paredes", 1f);
+
+			}
+		}
 
     }
-
 
     // Start is called before the first frame update
     void Start()
@@ -57,4 +80,82 @@ public class WebClient : MonoBehaviour
     {
 
     }
+
+	public void Generar_Paredes()
+	{
+		int count = 0;
+		pos_Paredes = new int[6, 8, 4];
+
+		for (int i = 0; i < 6; i++)
+		{
+			for (int j = 0; j < 8; j++)
+			{
+				for (int k = 0; k < 4; k++)
+				{
+					pos_Paredes[i, j, k] = paredes_lista.Paredes[count];
+
+					if (paredes_lista.Paredes[count] != 0)
+					{
+						pos = new Vector3(j * 5f, 1f, i * 5f);
+						//rotacion = Quaternion.Euler(0,0,0);
+						float rotacionY = 0f;
+
+
+						if (k == 0)
+						{
+							rotacionY = 90f;
+							pos.z = pos.z - 2f;
+						}
+
+						if (k == 1)
+						{
+							rotacionY = 0f;
+							pos.x = pos.x + 2f;
+						}
+
+						if (k == 2)
+						{
+							rotacionY = 90f;
+							pos.z = pos.z + 2f;
+						}
+
+						if (k == 3)
+						{
+							rotacionY = 0f;
+							pos.x = pos.x - 2f;
+						}
+
+						Vector3 rotationVector = new Vector3(0, rotacionY, 0);
+						Quaternion rotation = Quaternion.Euler(rotationVector);
+
+						if (paredes_lista.Paredes[count] == 1)
+						{
+							Instantiate(pared, pos, rotation);
+						}
+
+						if (paredes_lista.Paredes[count] == 6)
+						{
+							Instantiate(puerta, pos, rotation);
+						}
+
+						if (paredes_lista.Paredes[count] == 4)
+						{
+							Instantiate(amarillo, pos, rotation);
+						}
+
+
+					}
+
+					count++;
+
+				}
+			}
+		}
+	}
+}
+
+ [System.Serializable]
+public class Class_Paredes
+{
+	public int[] Paredes;
 }
