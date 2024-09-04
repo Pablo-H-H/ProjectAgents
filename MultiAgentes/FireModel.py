@@ -1,10 +1,10 @@
-import imports_to_use as imports_to_use
-from imports_to_use import *
+import MultiAgentes.imports_to_use as imports_to_use
+from MultiAgentes.imports_to_use import *
 
-from ReadLevel import ReadLevel
-from FireBehaviours import smokePlace
-from FireFighters import FireFighter
-from toList import toList
+from MultiAgentes.ReadLevel import ReadLevel
+from MultiAgentes.FireBehaviours import smokePlace
+from MultiAgentes.FireFighters import FireFighter
+from MultiAgentes.toList import toList
 
 class fireModel(Model):
     def __init__(self,file,W,H,numAgents):

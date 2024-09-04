@@ -1,6 +1,6 @@
-from ReadLevel import ReadLevel
-from FireModel import fireModel
-from toList import toList
+from MultiAgentes.ReadLevel import ReadLevel
+from MultiAgentes.FireModel import fireModel
+from MultiAgentes.toList import toList
 
 file = "./TestLevel.txt"
 
