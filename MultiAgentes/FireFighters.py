@@ -287,7 +287,7 @@ class FireFighter(Agent):
         else:
             self.model.grid.move_agent(self, next)  # Mover al bombero
 
-            self.model.index.append([current[0],current[1],next[0],next[1]])
+            self.model.index.append([current[0],current[1],next[1],next[0]])
             self.model.size.append(4)
             self.model.ID.append(2)
 
