@@ -15,17 +15,19 @@ def smokePlace(model):
         model.index.append([x,y])
         model.size.append(2)
         model.ID.append(0)
-        model.lost_victims += 1
-        print(f"Víctima perdida en ({x}, {y})")
-        model.points_marker -= 1
-        respawn_points_of_interest(model)
     elif model.smoke[y][x] == 2:
         model.index.append([x,y])
         model.size.append(2)
         model.ID.append(1)
-        print(f"Falsa alarma perdida en ({x}, {y})")
-        model.points_marker -= 1
-        respawn_points_of_interest(model)
+        if model.points[y][x] == 1:
+            model.lost_victims += 1
+            print(f"Víctima perdida en ({x}, {y})")
+            model.points_marker -= 1
+            respawn_points_of_interest(model)
+        elif model.points[y][x] == 2:
+            print(f"Falsa alarma perdida en ({x}, {y})")
+            model.points_marker -= 1
+            respawn_points_of_interest(model)
 
     neighbor = findNeighbor(model,x,y)
 
@@ -38,6 +40,17 @@ def smokePlace(model):
         model.index.append([x,y])
         model.size.append(2)
         model.ID.append(1)
+
+        if model.points[y][x] == 1:
+            model.lost_victims += 1
+            print(f"Víctima perdida en ({x}, {y})")
+            model.points_marker -= 1
+            respawn_points_of_interest(model)
+        elif model.points[y][x] == 2:
+            print(f"Falsa alarma perdida en ({x}, {y})")
+            model.points_marker -= 1
+            respawn_points_of_interest(model)
+
         flashOver(model,x,y)
 
     # If smoke gets to 3 initiate explosion/shockwave
@@ -76,6 +89,8 @@ def shockWave(model,x,y,nX,nY):
 
                 if wallStatus in [1,2]:
                     model.walls[y][x][i] += 1 # Damage or break walls around original explosion
+                    model.damage_markers +=1
+
                     model.index.append([x, y, i, model.walls[y][x][i].item()])
                     model.size.append(4)
                     model.ID.append(4)
@@ -92,6 +107,8 @@ def shockWave(model,x,y,nX,nY):
 
                 elif wallStatus == 4:
                     model.walls[y][x][i] = 3  # Destroy a closed door
+                    model.damage_markers +=1
+
                     model.index.append([x, y, i, 3])
                     model.size.append(4)
                     model.ID.append(4)
@@ -108,6 +125,8 @@ def shockWave(model,x,y,nX,nY):
                 
                 elif wallStatus == 5:
                     model.walls[y][x][i] = 3  # Destroy an open door but do not remove from explosion direction
+                    model.damage_markers +=1
+                    
                     model.index.append([x, y, i, 3])
                     model.size.append(4)
                     model.ID.append(4)
@@ -136,6 +155,17 @@ def shockWave(model,x,y,nX,nY):
                             model.index.append([newX,newY])
                             model.size.append(2)
                             model.ID.append(1)
+
+                            if model.points[y][x] == 1:
+                                model.lost_victims += 1
+                                print(f"Víctima perdida en ({x}, {y})")
+                                model.points_marker -= 1
+                                respawn_points_of_interest(model)
+                            elif model.points[y][x] == 2:
+                                print(f"Falsa alarma perdida en ({x}, {y})")
+                                model.points_marker -= 1
+                                respawn_points_of_interest(model)
+                            
                             # print(f"Set fire at ({newX}, {newY})")
                             flashOver(model, newX, newY)
 
@@ -161,7 +191,15 @@ def flashOver(model,posX,posY):
             model.index.append([x,y])
             model.size.append(2)
             model.ID.append(1)
-            respawn_points_of_interest(model)
+            if model.points[y][x] == 1:
+                model.lost_victims += 1
+                print(f"Víctima perdida en ({x}, {y})")
+                model.points_marker -= 1
+                respawn_points_of_interest(model)
+            elif model.points[y][x] == 2:
+                print(f"Falsa alarma perdida en ({x}, {y})")
+                model.points_marker -= 1
+                respawn_points_of_interest(model)
 
         for i in range(4):
             newX, newY = x + dirH[i], y + dirV[i]
