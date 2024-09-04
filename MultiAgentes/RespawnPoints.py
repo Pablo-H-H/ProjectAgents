@@ -1,7 +1,9 @@
 import MultiAgentes.imports_to_use as imports_to_use
 from MultiAgentes.imports_to_use import *
 def respawn_points_of_interest(model):
+    print(f"working")
     points_count = np.sum(model.points == 1) + np.sum(model.points == 2)
+    print(points_count)
 
     while points_count < 3:
         available_positions = [(x, y) for x in range(model.width) for y in range(model.height) if model.smoke[y][x] == 0 and model.points[y][x] == 0]
@@ -10,7 +12,7 @@ def respawn_points_of_interest(model):
             new_x, new_y = random.choice(available_positions)
             model.index.append([new_x, new_y])
             model.size.append(2)
-            model.id.append(8)
+            model.ID.append(8)
             
             # Decide aleatoriamente si es una víctima real o una falsa alarma
             model.points[new_y][new_x] = random.choice([1, 2])
@@ -23,7 +25,7 @@ def respawn_points_of_interest(model):
                 new_x, new_y = random.choice(available_positions)
                 model.index.append([new_x, new_y])
                 model.size.append(2)
-                model.id.append(8)
+                model.ID.append(8)
 
                 model.points[new_y][new_x] = random.choice([1, 2])
                 points_count += 1

@@ -6,10 +6,9 @@ file = "./TestLevel.txt"
 
 model = fireModel(file,8,6,6)
 
-# print(model.smoke)
-
 while model.model_is_running:
     model.step()
+    print(f"PoI:\n {model.points}")
 
 dict = {
     "Grids" : model.combineGrids,

@@ -19,13 +19,15 @@ def smokePlace(model):
         model.index.append([x,y])
         model.size.append(2)
         model.ID.append(1)
-        if model.points[y][x] in [1,2]:
+        if model.points[y][x] in [1, 2]:
             if model.points[y][x] == 1:
                 model.lost_victims += 1
                 print(f"Víctima perdida en ({x}, {y})")
             else:
                 print(f"Falsa alarma perdida en ({x}, {y})")
             model.points_marker -= 1
+            model.points[y][x] = 0;
+
             model.index.append([x,y])
             model.size.append(2)
             model.ID.append(7)
@@ -44,16 +46,20 @@ def smokePlace(model):
         model.size.append(2)
         model.ID.append(1)
 
-        if model.points[y][x] in [1,2]:
+        if model.points[y][x] in [1, 2]:
             if model.points[y][x] == 1:
                 model.lost_victims += 1
                 print(f"Víctima perdida en ({x}, {y})")
             else:
                 print(f"Falsa alarma perdida en ({x}, {y})")
             model.points_marker -= 1
+            model.points[y][x] = 0;
+
             model.index.append([x,y])
             model.size.append(2)
             model.ID.append(7)
+
+            respawn_points_of_interest(model)
 
         flashOver(model,x,y)
 
@@ -160,13 +166,15 @@ def shockWave(model,x,y,nX,nY):
                             model.size.append(2)
                             model.ID.append(1)
 
-                            if model.points[y][x] in [1,2]:
+                            if model.points[y][x] in [1, 2]:
                                 if model.points[y][x] == 1:
                                     model.lost_victims += 1
                                     print(f"Víctima perdida en ({x}, {y})")
                                 else:
                                     print(f"Falsa alarma perdida en ({x}, {y})")
                                 model.points_marker -= 1
+                                model.points[y][x] = 0;
+
                                 model.index.append([x,y])
                                 model.size.append(2)
                                 model.ID.append(7)
@@ -198,13 +206,15 @@ def flashOver(model,posX,posY):
             model.index.append([x,y])
             model.size.append(2)
             model.ID.append(1)
-            if model.points[y][x] in [1,2]:
+            if model.points[y][x] in [1, 2]:
                 if model.points[y][x] == 1:
                     model.lost_victims += 1
                     print(f"Víctima perdida en ({x}, {y})")
                 else:
                     print(f"Falsa alarma perdida en ({x}, {y})")
                 model.points_marker -= 1
+                model.points[y][x] = 0;
+
                 model.index.append([x,y])
                 model.size.append(2)
                 model.ID.append(7)
