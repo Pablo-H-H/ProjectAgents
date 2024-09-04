@@ -62,16 +62,14 @@ def ReadLevel(filename):
      1 = victim
      2 = false alarm """
     temp = content.splitlines()[6:9]
-    PoI = np.zeros((h,w),dtype = int)
+    PoI = np.zeros((h, w), dtype=int)
     for i in range(len(temp)):
         temp[i] = temp[i].split()
-        for j in range(2):
-            temp[i][j] = [*temp[i][j]]
-            temp[i][j] = [int(x) for x in temp[i][j]]
-        if temp[i][2][0] == 'v':
-            PoI[temp[i][0][0]-1,temp[i][1][0]-1] = 1
+        x, y = int(temp[i][0][0]), int(temp[i][1][0])
+        if temp[i][2] == 'v':
+            PoI[x-1, y-1] = 1
         else:
-            PoI[temp[i][0][0]-1,temp[i][1][0]-1] = 2
+            PoI[x-1, y-1] = 2
 
     """ Fire has characteristics:
      0 = nothing there
