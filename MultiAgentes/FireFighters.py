@@ -172,16 +172,16 @@ class FireFighter(Agent):
                 self.model.damage_markers += 2
                 if current[0] < next[0]: # Romper a derecha
                     self.model.walls[current[1]][current[0]][3] = 3
-                    self.model.index.append([current[1],current[0],3,3])
+                    self.model.index.append([current[0],current[1],3,3])
                 elif current[0] > next[0]: # Romper a izquierda
                     self.model.walls[current[1]][current[0]][1] = 3
-                    self.model.index.append([current[1],current[0],1,3])
+                    self.model.index.append([current[0],current[1],1,3])
                 elif current[1] < next[1]: # Romper abajo
                     self.model.walls[current[1]][current[0]][1] = 3
-                    self.model.index.append([current[1],current[0],2,3])
+                    self.model.index.append([current[0],current[1],2,3])
                 elif current[1] > next[1]: # Romper ariba
                     self.model.walls[current[1]][current[0]][1] = 3
-                    self.model.index.append([current[1],current[0],0,3])
+                    self.model.index.append([current[0],current[1],0,3])
                 self.model.size.append(4)
                 self.model.ID.append(4)
 
@@ -195,20 +195,20 @@ class FireFighter(Agent):
                 self.model.damage_markers += 1
                 if current[0] < next[0]: # Quebrar a derecha
                     self.model.walls[current[1]][current[0]][3] = 2
-                    self.model.index.append([current[1],current[0],3,2])
+                    self.model.index.append([current[0],current[1],3,2])
                 elif current[0] > next[0]: # Quebrar a izquierda
                     self.model.walls[current[1]][current[0]][1] = 2
-                    self.model.index.append([current[1],current[0],1,2])
+                    self.model.index.append([current[0],current[1],1,2])
                 elif current[1] < next[1]: # Quebrar abajo
                     self.model.walls[current[1]][current[0]][2] = 2
-                    self.model.index.append([current[1],current[0],2,2])
+                    self.model.index.append([current[0],current[1],2,2])
                 elif current[1] > next[1]: # Quebrar ariba
                     self.model.walls[current[1]][current[0]][0] = 2
-                    self.model.index.append([current[1],current[0],0,2])
+                    self.model.index.append([current[0],current[1],0,2])
                 self.model.size.append(4)
                 self.model.ID.append(4)
 
-                self.model.index.append([current[1],current[0]])
+                self.model.index.append([current[0],current[1]])
                 self.model.size.append(2)
                 self.model.ID.append(6)
 
@@ -225,20 +225,20 @@ class FireFighter(Agent):
             if self.action_points >= 2:
                 if current[0] < next[0]: # abrir a derecha
                     self.model.walls[current[1]][current[0]][3] = 5
-                    self.model.index.append([current[1],current[0],3,5])
+                    self.model.index.append([current[0],current[1],3,5])
                 elif current[0] > next[0]: # abrir a izquierda
                     self.model.walls[current[1]][current[0]][1] = 5
-                    self.model.index.append([current[1],current[0],1,5])
+                    self.model.index.append([current[0],current[1],1,5])
                 elif current[1] < next[1]: # abrir abajo
                     self.model.walls[current[1]][current[0]][2] = 5
-                    self.model.index.append([current[1],current[0],2,5])
+                    self.model.index.append([current[0],current[1],2,5])
                 elif current[1] > next[1]: # abrir ariba
                     self.model.walls[current[1]][current[0]][0] = 5
-                    self.model.index.append([current[1],current[0],0,5])
+                    self.model.index.append([current[0],current[1],0,5])
                 self.model.size.append(4)
                 self.model.ID.append(4)
 
-                self.model.index.append([current[1],current[0]])
+                self.model.index.append([current[0],current[1]])
                 self.model.size.append(2)
                 self.model.ID.append(6)
 
@@ -260,7 +260,7 @@ class FireFighter(Agent):
 
                 self.model.size.append(2)
                 self.model.ID.append(3)
-                self.model.index.append([next[1], next[0]])
+                self.model.index.append([next[0], next[1]])
 
                 print(f"Bombero {self.unique_id} ha apagado fuego en ({next[0]}, {next[1]})")
             else:
@@ -276,7 +276,7 @@ class FireFighter(Agent):
 
                 self.model.size.append(2)
                 self.model.ID.append(3)
-                self.model.index.append([next[1], next[0]])
+                self.model.index.append([next[0], next[1]])
 
                 print(f"Bombero {self.unique_id} ha eliminado humo en ({next[0]}, {next[1]})")
             else:
@@ -287,7 +287,7 @@ class FireFighter(Agent):
         else:
             self.model.grid.move_agent(self, next)  # Mover al bombero
 
-            self.model.index.append([current[1],current[0],next[0],next[1]])
+            self.model.index.append([current[0],current[1],next[0],next[1]])
             self.model.size.append(4)
             self.model.ID.append(2)
 
@@ -298,27 +298,27 @@ class FireFighter(Agent):
         if not self.carrying_victim and self.model.points[y][x] in [1, 2]:
             # Es un punto de interés
             if self.model.points[y][x] == 1:  # Es una víctima
-                self.model.index.append([y, x])
+                self.model.index.append([x, y])
                 self.model.size.append(2)
                 self.model.ID.append(9)
 
                 print(f"Bombero {self.unique_id} ha encontrado una víctima en ({x}, {y})")
                 self.carrying_victim = True
 
-                self.model.index.append([y,x])
+                self.model.index.append([x,y])
                 self.model.size.append(2)
                 self.model.ID.append(5)
 
                 self.model.points[y][x] = 0  # Se elimina la víctima del mapa
 
-                self.model.index.append([y,x])
+                self.model.index.append([x,y])
                 self.model.size.append(2)
                 self.model.ID.append(7)
             else:  # Es una falsa alarma
                 print(f"Bombero {self.unique_id} ha encontrado una falsa alarma en ({x}, {y})")
                 self.model.points[y][x] = 0  # Se elimina la falsa alarma del mapa
 
-                self.model.index.append([y,x])
+                self.model.index.append([x,y])
                 self.model.size.append(2)
                 self.model.ID.append(7)
 
@@ -329,7 +329,7 @@ class FireFighter(Agent):
         if self.carrying_victim and np.any(self.model.walls[y][x] == 6):  # Suponemos que la salida es el valor 6
             self.carrying_victim = False
 
-            self.model.index.append([y,x])
+            self.model.index.append([x,y])
             self.model.size.append(2)
             self.model.ID.append(5)
 
