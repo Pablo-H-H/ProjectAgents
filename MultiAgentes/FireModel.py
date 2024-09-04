@@ -19,6 +19,7 @@ class fireModel(Model):
         self.index = []
         self.size = []
         self.ID = []
+        self.graph = None
 
         self.saved_victims = 0
         self.lost_victims = 0
@@ -35,9 +36,10 @@ class fireModel(Model):
             0: 0,  # No hay obstáculo
             1: 4,  # Pared
             2: 2,  # Pared dañada
-            4: 3,  # Puerta cerrada
+            3: 0,  # Pared o puerta rota
+            4: 1,  # Puerta cerrada
             5: 0,   # Puerta abierta
-            6: 4   # Entrada
+            6: 0   # Entrada
         }
 
         # self.combineGrids.append(self.grid)
@@ -68,32 +70,6 @@ class fireModel(Model):
             if nx < x: return 1  # Izquierda
             if ny > y: return 2  # Abajo
             if ny < y: return 0  # Arriba
-    def step(self):
-        print(f"\n--- Step {self.schedule.steps + 1} ---")
-        for agent in self.schedule.agents:
-            agent.step()  # Cada bombero realiza su turno completo
-            #create_graph(self.walls)
-            if not self.model_is_running:
-                break
-
-            # Después de cada turno de un bombero, el mapa se actualiza
-            smokePlace(self)
-            # Verificar condiciones de victoria y derrota
-            if self.saved_victims >= 7:
-                print("¡Victoria! Se han rescatado suficientes víctimas.")
-                self.model_is_running = False
-                break 
-            elif self.lost_victims >= 4 or self.damage_markers >= 24:
-                print("Derrota. El edificio ha colapsado o se han perdido demasiadas víctimas.")
-                self.model_is_running = False
-                break
-
-        print(f"Estado después del Step {self.schedule.steps + 1}:")
-        print(f"Víctimas rescatadas: {self.saved_victims}")
-        print(f"Víctimas perdidas: {self.lost_victims}")
-        print(f"Marcadores de daño: {self.damage_markers}")
-
-        self.schedule.steps += 1
 
     def create_graph(self):
         h, w = self.walls.shape[:2]
@@ -120,6 +96,32 @@ class fireModel(Model):
                     graph[current_node][(i, j+1)] = cost
 
         return graph
+    
+    def step(self):
+        print(f"\n--- Step {self.schedule.steps + 1} ---")
+        self.graph = self.create_graph()
+        for agent in self.schedule.agents:
+            self.graph = self.create_graph()
+            agent.step()  # Cada bombero realiza su turno completo
+            # Después de cada turno de un bombero, el mapa se actualiza
+            smokePlace(self)
+            self.graph = self.create_graph()
+            # Verificar condiciones de victoria y derrota
+            if self.saved_victims >= 7:
+                print("¡Victoria! Se han rescatado suficientes víctimas.")
+                self.model_is_running = False
+                break 
+            elif self.lost_victims >= 4 or self.damage_markers >= 24:
+                print("Derrota. El edificio ha colapsado o se han perdido demasiadas víctimas.")
+                self.model_is_running = False
+                break
+
+        print(f"Estado después del Step {self.schedule.steps + 1}:")
+        print(f"Víctimas rescatadas: {self.saved_victims}")
+        print(f"Víctimas perdidas: {self.lost_victims}")
+        print(f"Marcadores de daño: {self.damage_markers}")
+
+        self.schedule.steps += 1
 
 
 def get_grid(model):
