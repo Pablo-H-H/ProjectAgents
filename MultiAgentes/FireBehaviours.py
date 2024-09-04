@@ -11,11 +11,11 @@ def smokePlace(model):
     (x,y) = random.choice(placement)
     model.smoke[y][x] += 1
     if model.smoke[y][x] == 1:    
-        model.index.append([x,y])
+        model.index.append([y,x])
         model.size.append(2)
         model.ID.append(0)
     elif model.smoke[y][x] == 2:
-        model.index.append([x,y])
+        model.index.append([y,x])
         model.size.append(2)
         model.ID.append(1)
         if model.points[y][x] in [1, 2]:
@@ -27,7 +27,7 @@ def smokePlace(model):
             model.points_marker -= 1
             model.points[y][x] = 0;
 
-            model.index.append([x,y])
+            model.index.append([y,x])
             model.size.append(2)
             model.ID.append(7)
             
@@ -41,7 +41,7 @@ def smokePlace(model):
     # Otherwise if the neighbor is already a fire change to fire and initiate possible flashpoint
     elif model.smoke[y][x] == 1 and any(model.smoke[ny][nx] == 2 for nx, ny in neighbor):
         model.smoke[y][x] = 2    # Update to regular fire value
-        model.index.append([x,y])
+        model.index.append([y,x])
         model.size.append(2)
         model.ID.append(1)
 
@@ -54,7 +54,7 @@ def smokePlace(model):
             model.points_marker -= 1
             model.points[y][x] = 0;
 
-            model.index.append([x,y])
+            model.index.append([y,x])
             model.size.append(2)
             model.ID.append(7)
 
@@ -100,13 +100,13 @@ def shockWave(model,x,y,nX,nY):
                     model.walls[y][x][i] += 1 # Damage or break walls around original explosion
                     model.damage_markers +=1
 
-                    model.index.append([x, y, i, model.walls[y][x][i].item()])
+                    model.index.append([y, x, i, model.walls[y][x][i].item()])
                     model.size.append(4)
                     model.ID.append(4)
                     model.points_marker -= 1
                     if (0 <= x + dirX[i] < model.width) and (0 <= y + dirY[i] < model.height):
                         model.walls[y + dirY[i]][x + dirX[i]][opposite] += 1 # Destroy in opposite
-                        model.index.append([x + dirX[i], y + dirY[i], opposite, model.walls[y + dirY[i]][x + dirX[i]][opposite].item()])
+                        model.index.append([y + dirY[i], x + dirX[i], opposite, model.walls[y + dirY[i]][x + dirX[i]][opposite].item()])
                         model.size.append(4)
                         model.ID.append(4)
                     #     print(f"{model.walls[y][x]}, {model.walls[y + dirY[i]][x + dirX[i]]}")
@@ -118,13 +118,13 @@ def shockWave(model,x,y,nX,nY):
                     model.walls[y][x][i] = 3  # Destroy a closed door
                     model.damage_markers +=1
 
-                    model.index.append([x, y, i, 3])
+                    model.index.append([y, x, i, 3])
                     model.size.append(4)
                     model.ID.append(4)
                     model.points_marker -= 1
                     if (0 <= x + dirX[i] < model.width) and (0 <= y + dirY[i] < model.height):
                         model.walls[y + dirY[i]][x + dirX[i]][opposite] = 3 # Destroy in opposite
-                        model.index.append([x + dirX[i], y + dirY[i], opposite, 3])
+                        model.index.append([y + dirY[i], x + dirX[i], opposite, 3])
                         model.size.append(4)
                         model.ID.append(4)
                     #     print(f"{model.walls[y][x]}, {model.walls[y + dirY[i]][x + dirX[i]]}")
@@ -136,13 +136,13 @@ def shockWave(model,x,y,nX,nY):
                     model.walls[y][x][i] = 3  # Destroy an open door but do not remove from explosion direction
                     model.damage_markers +=1
 
-                    model.index.append([x, y, i, 3])
+                    model.index.append([y, x, i, 3])
                     model.size.append(4)
                     model.ID.append(4)
                     model.points_marker -= 1
                     if (0 <= x + dirX[i] < model.width) and (0 <= y + dirY[i] < model.height):
                         model.walls[y + dirY[i]][x + dirX[i]][opposite] = 3 # Destroy in opposite
-                        model.index.append([x + dirX[i], y + dirY[i], opposite, 3])
+                        model.index.append([y + dirY[i], x + dirX[i], opposite, 3])
                         model.size.append(4)
                         model.ID.append(4)
                     #     print(f"{model.walls[y][x]}, {model.walls[y + dirY[i]][x + dirX[i]]}")
@@ -161,7 +161,7 @@ def shockWave(model,x,y,nX,nY):
 
                         elif model.smoke[newY][newX] in [0, 1]:
                             model.smoke[newY][newX] = 2
-                            model.index.append([newX,newY])
+                            model.index.append([newY,newX])
                             model.size.append(2)
                             model.ID.append(1)
 
@@ -174,7 +174,7 @@ def shockWave(model,x,y,nX,nY):
                                 model.points_marker -= 1
                                 model.points[y][x] = 0;
 
-                                model.index.append([x,y])
+                                model.index.append([y,x])
                                 model.size.append(2)
                                 model.ID.append(7)
 
@@ -202,7 +202,7 @@ def flashOver(model,posX,posY):
         if model.smoke[y][x] == 1:
             # print(f"Converted smoke at cell ({x},{y}) to fire")
             model.smoke[y][x] = 2
-            model.index.append([x,y])
+            model.index.append([y,x])
             model.size.append(2)
             model.ID.append(1)
             if model.points[y][x] in [1, 2]:
@@ -214,7 +214,7 @@ def flashOver(model,posX,posY):
                 model.points_marker -= 1
                 model.points[y][x] = 0;
 
-                model.index.append([x,y])
+                model.index.append([y,x])
                 model.size.append(2)
                 model.ID.append(7)
                 
