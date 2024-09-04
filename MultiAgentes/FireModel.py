@@ -6,8 +6,6 @@ from MultiAgentes.FireBehaviours import smokePlace
 from MultiAgentes.FireFighters import FireFighter
 from MultiAgentes.toList import toList
 
-from MultiAgentes.Graph import create_graph
-
 class fireModel(Model):
     def __init__(self,file,W,H,numAgents):
         super().__init__()
@@ -97,8 +95,8 @@ class fireModel(Model):
 
         self.schedule.steps += 1
 
-    def create_graph(walls):
-        h, w = walls.shape[:2]
+    def create_graph(self):
+        h, w = self.walls.shape[:2]
         graph = {}
 
         # Iterar sobre cada celda de la cuadrícula
@@ -109,16 +107,16 @@ class fireModel(Model):
 
                 # Revisar las celdas adyacentes (arriba, abajo, izquierda, derecha)
                 if i > 0:  # Arriba
-                    cost = cost_dict[walls[i][j][0]]
+                    cost = self.cost_dict[self.walls[i][j][0]]
                     graph[current_node][(i-1, j)] = cost
                 if i < h - 1:  # Abajo
-                    cost = cost_dict[walls[i][j][2]]
+                    cost = self.cost_dict[self.walls[i][j][2]]
                     graph[current_node][(i+1, j)] = cost
                 if j > 0:  # Izquierda
-                    cost = cost_dict[walls[i][j][3]]
+                    cost = self.cost_dict[self.walls[i][j][3]]
                     graph[current_node][(i, j-1)] = cost
                 if j < w - 1:  # Derecha
-                    cost = cost_dict[walls[i][j][1]]
+                    cost = self.cost_dict[self.walls[i][j][1]]
                     graph[current_node][(i, j+1)] = cost
 
         return graph
