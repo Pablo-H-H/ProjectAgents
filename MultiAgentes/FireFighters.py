@@ -87,13 +87,13 @@ class FireFighter(Agent):
 
         # Direcciones de movimiento
         if x1 < x2:  # Movimiento a la derecha
-            return np.any(self.model.walls[y1][x1 + 1] == 1)
+            return np.any(self.model.walls[y1][x1][3] == 1)
         elif x1 > x2:  # Movimiento a la izquierda
-            return np.any(self.model.walls[y1][x1 - 1] == 1)
+            return np.any(self.model.walls[y1][x1][1] == 1)
         elif y1 < y2:  # Movimiento hacia abajo
-            return np.any(self.model.walls[y1 + 1][x1] == 1)
+            return np.any(self.model.walls[y1][x1][2] == 1)
         elif y1 > y2:  # Movimiento hacia arriba
-            return np.any(self.model.walls[y1 - 1][x1] == 1)
+            return np.any(self.model.walls[y1][x1][0] == 1)
 
         return False
 
@@ -112,16 +112,16 @@ class FireFighter(Agent):
         x2, y2 = next
         
         if x1 < x2:  # Movement to the right
-            if np.any(self.model.walls[y1][x1 + 1] == 3):
+            if np.any(self.model.walls[y1][x1][3] == 3):
                 return True
         elif x1 > x2:  # Movement to the left
-            if np.any(self.model.walls[y1][x1 - 1] == 3):
+            if np.any(self.model.walls[y1][x1][1] == 3):
                 return True
         elif y1 < y2:  # Movement down
-            if np.any(self.model.walls[y1 + 1][x1] == 3):
+            if np.any(self.model.walls[y1][x1][2] == 3):
                 return True
         elif y1 > y2:  # Movement up
-            if np.any(self.model.walls[y1 - 1][x1] == 3):
+            if np.any(self.model.walls[y1][x1][0] == 3):
                 return True
 
         return False
@@ -130,16 +130,16 @@ class FireFighter(Agent):
         x1, y1 = current
         x2, y2 = next
         if x1 < x2:  # Movement to the right
-            if np.any(self.model.walls[y1][x1 + 1] == 4):
+            if np.any(self.model.walls[y1][x1][3] == 4):
                 return True
         elif x1 > x2:  # Movement to the left
-            if np.any(self.model.walls[y1][x1 - 1] == 4):
+            if np.any(self.model.walls[y1][x1][1] == 4):
                 return True
         elif y1 < y2:  # Movement down
-            if np.any(self.model.walls[y1 + 1][x1] == 4):
+            if np.any(self.model.walls[y1][x1][2] == 4):
                 return True
         elif y1 > y2:  # Movement up
-            if np.any(self.model.walls[y1 - 1][x1] == 4):
+            if np.any(self.model.walls[y1][x1][0] == 4):
                 return True
 
         return False
@@ -170,12 +170,48 @@ class FireFighter(Agent):
             # Si tiene suficientes puntos de acción para romper la pared
             if self.action_points >= 4:
                 self.model.damage_markers += 2
-                self.model.walls[current[1]][current[0]] = 0  # Romper la pared
+                if current[0] < next[0]: # Romper a derecha
+                    self.model.walls[current[1]][current[0]][3] = 3
+                    self.model.index.append([current[0],current[1],3,3])
+                elif current[0] > next[0]: # Romper a izquierda
+                    self.model.walls[current[1]][current[0]][1] = 3
+                    self.model.index.append([current[0],current[1],1,3])
+                elif current[1] < next[1]: # Romper abajo
+                    self.model.walls[current[1]][current[0]][1] = 3
+                    self.model.index.append([current[0],current[2],2,3])
+                elif current[1] > next[1]: # Romper ariba
+                    self.model.walls[current[1]][current[0]][1] = 3
+                    self.model.index.append([current[0],current[0],0,3])
+                self.model.size.append(4)
+                self.model.ID.append(4)
+
+                self.model.index.append([current[0],current[1]])
+                self.model.size.append(2)
+                self.model.ID.append(6)
+
                 self.action_points -= 4
                 print(f"Bombero {self.unique_id} ha roto una pared en ({current[0]}, {current[1]})")
             elif self.action_points >= 2:
                 self.model.damage_markers += 1
-                self.model.walls[current[1]][current[0]] = 3  # Dañar la pared
+                if current[0] < next[0]: # Quebrar a derecha
+                    self.model.walls[current[1]][current[0]][3] = 2
+                    self.model.index.append([current[0],current[1],3,2])
+                elif current[0] > next[0]: # Quebrar a izquierda
+                    self.model.walls[current[1]][current[0]][1] = 2
+                    self.model.index.append([current[0],current[1],1,2])
+                elif current[1] < next[1]: # Quebrar abajo
+                    self.model.walls[current[1]][current[0]][2] = 2
+                    self.model.index.append([current[0],current[1],2,2])
+                elif current[1] > next[1]: # Quebrar ariba
+                    self.model.walls[current[1]][current[0]][0] = 2
+                    self.model.index.append([current[0],current[1],0,2])
+                self.model.size.append(4)
+                self.model.ID.append(4)
+
+                self.model.index.append([current[0],current[1]])
+                self.model.size.append(2)
+                self.model.ID.append(6)
+
                 self.action_points -= 2
                 print(f"Bombero {self.unique_id} ha dañado una pared en ({current[0]}, {current[1]})")
             else:
@@ -187,14 +223,28 @@ class FireFighter(Agent):
         # Si hay una puerta cerrada
         elif self.is_a_closed_door(current, next):
             if self.action_points >= 2:
-                self.model.walls[current[1]][current[0]] = 5  # Abrir la puerta
+                if current[0] < next[0]: # abrir a derecha
+                    self.model.walls[current[1]][current[0]][3] = 5
+                    self.model.index.append([current[0],current[1],3,5])
+                elif current[0] > next[0]: # abrir a izquierda
+                    self.model.walls[current[1]][current[0]][1] = 5
+                    self.model.index.append([current[0],current[1],1,5])
+                elif current[1] < next[1]: # abrir abajo
+                    self.model.walls[current[1]][current[0]][2] = 5
+                    self.model.index.append([current[0],current[2],2,5])
+                elif current[1] > next[1]: # abrir ariba
+                    self.model.walls[current[1]][current[0]][0] = 5
+                    self.model.index.append([current[0],current[0],0,5])
+                self.model.size.append(4)
+                self.model.ID.append(4)
+
+                self.model.index.append([current[0],current[1]])
+                self.model.size.append(2)
+                self.model.ID.append(6)
+
                 self.action_points -= 2
                 print(f"Bombero {self.unique_id} ha abierto una puerta en ({current[0]}, {current[1]})")
                 self.model.grid.move_agent(self, next)
-            elif self.action_points >= 1:
-                self.model.walls[current[1]][current[0]] = 5  # Abrir la puerta parcialmente
-                self.action_points -= 1
-                print(f"Bombero {self.unique_id} ha abierto parcialmente una puerta en ({current[0]}, {current[1]})")
             else:
                 # No tiene suficientes puntos, guarda AP y termina el turno
                 self.add_points(self.action_points)
@@ -207,9 +257,11 @@ class FireFighter(Agent):
                 self.model.grid.move_agent(self, next)  # Mover al bombero
                 self.model.smoke[next[1]][next[0]] = 0  # Extinguir el fuego
                 self.action_points -= 3
+
                 self.model.size.append(2)
-                self.model.ID.append(2)
+                self.model.ID.append(3)
                 self.model.index.append([next[0], next[1]])
+
                 print(f"Bombero {self.unique_id} ha apagado fuego en ({next[0]}, {next[1]})")
             else:
                 self.add_points(self.action_points)
@@ -221,6 +273,11 @@ class FireFighter(Agent):
                 self.model.grid.move_agent(self, next)  # Mover al bombero
                 self.model.smoke[next[1]][next[0]] = 0  # Eliminar el humo
                 self.action_points -= 2
+
+                self.model.size.append(2)
+                self.model.ID.append(3)
+                self.model.index.append([next[0], next[1]])
+
                 print(f"Bombero {self.unique_id} ha eliminado humo en ({next[0]}, {next[1]})")
             else:
                 self.add_points(self.action_points)
@@ -229,6 +286,11 @@ class FireFighter(Agent):
         # Movimiento normal sin obstáculos
         else:
             self.model.grid.move_agent(self, next)  # Mover al bombero
+
+            self.model.index.append([current[0],current[1],next[0],next[1]])
+            self.model.size.append(4)
+            self.model.ID.append(2)
+
             self.action_points -= 1  # Restar puntos de acción por moverse
         
         # Detectar si ha llegado a un punto de interés
@@ -236,18 +298,41 @@ class FireFighter(Agent):
         if not self.carrying_victim and self.model.points[y][x] in [1, 2]:
             # Es un punto de interés
             if self.model.points[y][x] == 1:  # Es una víctima
-                self.carrying_victim = True
-                self.model.points[y][x] = 0  # Se elimina la víctima del mapa
+                self.model.index.append([x, y])
+                self.model.size.append(2)
+                self.model.ID.append(9)
+
                 print(f"Bombero {self.unique_id} ha encontrado una víctima en ({x}, {y})")
+                self.carrying_victim = True
+
+                self.model.index.append([x,y])
+                self.model.size.append(2)
+                self.model.ID.append(5)
+
+                self.model.points[y][x] = 0  # Se elimina la víctima del mapa
+
+                self.model.index.append([x,y])
+                self.model.size.append(2)
+                self.model.ID.append(7)
             else:  # Es una falsa alarma
-                self.model.points[y][x] = 0  # Se elimina la falsa alarma del mapa
                 print(f"Bombero {self.unique_id} ha encontrado una falsa alarma en ({x}, {y})")
+                self.model.points[y][x] = 0  # Se elimina la falsa alarma del mapa
+
+                self.model.index.append([x,y])
+                self.model.size.append(2)
+                self.model.ID.append(7)
+
                 respawn_points_of_interest(self.model)  # Generar un nuevo punto de interés
             return True
 
         # Detectar si ha llegado a una salida con una víctima
-        if self.carrying_victim and self.model.walls[y][x] == 6:  # Suponemos que la salida es el valor 6
+        if self.carrying_victim and np.any(self.model.walls[y][x] == 6):  # Suponemos que la salida es el valor 6
             self.carrying_victim = False
+
+            self.model.index.append([x,y])
+            self.model.size.append(2)
+            self.model.ID.append(5)
+
             self.model.saved_victims += 1
             print(f"Bombero {self.unique_id} ha rescatado una víctima en la salida ({x}, {y})")
             respawn_points_of_interest(self.model)  # Generar un nuevo punto de interés
