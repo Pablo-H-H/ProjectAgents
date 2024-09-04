@@ -4,13 +4,12 @@ from MultiAgentes.toList import toList
 
 file = "./TestLevel.txt"
 
-model = fireModel(file,8,6,5)
+model = fireModel(file,8,6,6)
 
 # print(model.smoke)
 
-for i in range(10):
+while model.model_is_running:
     model.step()
-    # print(model.smoke)
 
 dict = {
     "Grids" : model.combineGrids,

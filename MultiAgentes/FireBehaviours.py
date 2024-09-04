@@ -8,7 +8,7 @@ def smokePlace(model):
 
     placement = [place for place in model.mapCoords if model.smoke[place[1]][place[0]] <= 2]
     (x,y) = random.choice(placement)
-    print("Humo creado en: " + str(x) + ", " + str(y))
+    print((x,y))
     model.smoke[y][x] += 1
     if model.smoke[y][x] == 1:    
         model.index.append([x,y])
