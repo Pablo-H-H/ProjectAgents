@@ -1,5 +1,6 @@
 import MultiAgentes.imports_to_use as imports_to_use
 from MultiAgentes.imports_to_use import *
+from MultiAgentes.RespawnPoints import respawn_points_of_interest
 
 def smokePlace(model):
     global dirH, dirV
@@ -14,10 +15,17 @@ def smokePlace(model):
         model.index.append([x,y])
         model.size.append(2)
         model.ID.append(0)
+        model.lost_victims += 1
+        print(f"Víctima perdida en ({x}, {y})")
+        model.points_marker -= 1
+        respawn_points_of_interest(model)
     elif model.smoke[y][x] == 2:
         model.index.append([x,y])
         model.size.append(2)
         model.ID.append(1)
+        print(f"Falsa alarma perdida en ({x}, {y})")
+        model.points_marker -= 1
+        respawn_points_of_interest(model)
 
     neighbor = findNeighbor(model,x,y)
 
@@ -71,6 +79,7 @@ def shockWave(model,x,y,nX,nY):
                     model.index.append([x, y, i, model.walls[y][x][i].item()])
                     model.size.append(4)
                     model.ID.append(4)
+                    model.points_marker -= 1
                     if (0 <= x + dirX[i] < model.width) and (0 <= y + dirY[i] < model.height):
                         model.walls[y + dirY[i]][x + dirX[i]][opposite] += 1 # Destroy in opposite
                         model.index.append([x + dirX[i], y + dirY[i], opposite, model.walls[y + dirY[i]][x + dirX[i]][opposite].item()])
@@ -86,6 +95,7 @@ def shockWave(model,x,y,nX,nY):
                     model.index.append([x, y, i, 3])
                     model.size.append(4)
                     model.ID.append(4)
+                    model.points_marker -= 1
                     if (0 <= x + dirX[i] < model.width) and (0 <= y + dirY[i] < model.height):
                         model.walls[y + dirY[i]][x + dirX[i]][opposite] = 3 # Destroy in opposite
                         model.index.append([x + dirX[i], y + dirY[i], opposite, 3])
@@ -101,6 +111,7 @@ def shockWave(model,x,y,nX,nY):
                     model.index.append([x, y, i, 3])
                     model.size.append(4)
                     model.ID.append(4)
+                    model.points_marker -= 1
                     if (0 <= x + dirX[i] < model.width) and (0 <= y + dirY[i] < model.height):
                         model.walls[y + dirY[i]][x + dirX[i]][opposite] = 3 # Destroy in opposite
                         model.index.append([x + dirX[i], y + dirY[i], opposite, 3])
@@ -150,6 +161,7 @@ def flashOver(model,posX,posY):
             model.index.append([x,y])
             model.size.append(2)
             model.ID.append(1)
+            respawn_points_of_interest(model)
 
         for i in range(4):
             newX, newY = x + dirH[i], y + dirV[i]
