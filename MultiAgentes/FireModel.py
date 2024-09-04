@@ -36,25 +36,21 @@ class fireModel(Model):
         self.model_is_running = True
         self.points_marker = 3
 
+        self.mapCoords = [(x,y) for x in range(self.width) for y in range(self.height)]
+
         # Initialize array of walls for UNITY
         self.combineGrids.append(self.walls.tolist())
         self.index.append([6, 8, 4])
         self.size.append(3)
         self.ID.append(-1)
 
-        # self.combineGrids.append(self.grid)
-        # self.index.append([6, 8])
-        # self.size.append(2)
-        # self.ID.append(-2)
+        # Initialize grid for UNITY
+        self.combineGrids.append(get_grid(self).tolist())
+        self.index.append([6, 8])
+        self.size.append(2)
+        self.ID.append(-2)
 
         self.combineGrids = toList(self.combineGrids)
-
-        # print(f"Grids: {self.combineGrids}")
-        # print(f"Index: {self.index}")
-        # print(f"Size: {self.size}")
-        # print(f"ID: {self.ID}")
-
-        self.mapCoords = [(x,y) for x in range(self.width) for y in range(self.height)]
 
         for i in range(numAgents):
             start = [cell for cell in self.mapCoords if np.any(self.walls[cell[1]][cell[0]] == 6)]
