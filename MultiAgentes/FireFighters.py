@@ -17,15 +17,19 @@ class FireFighter(Agent):
         self.saved_ap = 0
 
     def find_target(self):
-        points = []
-        for i in range(self.model.height):
-            for j in range(self.model.width):
-                if self.model.points[i][j] == 1 or self.model.points[i][j] == 2:
-                    points.append((j, i))
-        points = [_ for _ in points if _ not in self.otherTargets]
-        point = random.choice(points)
+        if self.carrying_victim:
+            # Busca la salida más cercana
+            return self.find_nearest_exit()
+        else:
+            points = []
+            for i in range(self.model.height):
+                for j in range(self.model.width):
+                    if self.model.points[i][j] == 1 or self.model.points[i][j] == 2:
+                        points.append((j, i))
+            points = [_ for _ in points if _ not in self.otherTargets]
+            point = random.choice(points)
 
-        return point
+            return point
     
     def getTargets(self):
         otherTargets = []
@@ -140,8 +144,27 @@ class FireFighter(Agent):
 
         return False
     
-    def move(self, current, next):
+    def find_nearest_exit(self):
+        exits = []
+        for i in range(self.model.height):
+            for j in range(self.model.width):
+                # Usar np.any() para verificar si alguno de los valores en la celda es 6 (la salida)
+                if np.any(self.model.walls[i][j] == 6):  # Supongamos que la salida tiene un valor de 6
+                    exits.append((j, i))
         
+        # Usar Dijkstra para encontrar la salida más cercana
+        nearest_exit = None
+        min_distance = float('inf')
+        for exit in exits:
+            path = self.dijkstra(self.model.graph, self.pos, exit)
+            if path and len(path) < min_distance:
+                nearest_exit = exit
+                min_distance = len(path)
+        
+        return nearest_exit
+
+    
+    def move(self, current, next):
         # Verificar si hay una pared en la dirección del movimiento
         if self.is_wall_in_direction(current, next):
             # Si tiene suficientes puntos de acción para romper la pared
@@ -204,9 +227,31 @@ class FireFighter(Agent):
         else:
             self.model.grid.move_agent(self, next)  # Mover al bombero
             self.action_points -= 1  # Restar puntos de acción por moverse
-            return True  # Se movió correctamente
+        
+        # Detectar si ha llegado a un punto de interés
+        x, y = next
+        if not self.carrying_victim and self.model.points[y][x] in [1, 2]:
+            # Es un punto de interés
+            if self.model.points[y][x] == 1:  # Es una víctima
+                self.carrying_victim = True
+                self.model.points[y][x] = 0  # Se elimina la víctima del mapa
+                print(f"Bombero {self.unique_id} ha encontrado una víctima en ({x}, {y})")
+            else:  # Es una falsa alarma
+                self.model.points[y][x] = 0  # Se elimina la falsa alarma del mapa
+                print(f"Bombero {self.unique_id} ha encontrado una falsa alarma en ({x}, {y})")
+                respawn_points_of_interest(self.model)  # Generar un nuevo punto de interés
+            return True
 
-        return True  # Si se movió exitosamente
+        # Detectar si ha llegado a una salida con una víctima
+        if self.carrying_victim and self.model.walls[y][x] == 6:  # Suponemos que la salida es el valor 6
+            self.carrying_victim = False
+            self.model.saved_victims += 1
+            print(f"Bombero {self.unique_id} ha rescatado una víctima en la salida ({x}, {y})")
+            respawn_points_of_interest(self.model)  # Generar un nuevo punto de interés
+            return True
+
+        return True
+
 
     def find_nearest_smoke_or_fire(self):
         nearest_point = None
@@ -236,7 +281,8 @@ class FireFighter(Agent):
             while self.action_points > 0 and self.way:
                 current = self.pos
                 next = self.way.pop(0)
-                self.move(current, next)
+                if not self.move(current, next):
+                    break
             print(f"Ha terminado su turno en ({self.pos[0]}, {self.pos[1]})")       
         else:
             if self.action_points > 0:
