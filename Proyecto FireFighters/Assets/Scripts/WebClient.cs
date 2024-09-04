@@ -19,10 +19,18 @@ public class WebClient : MonoBehaviour
 
 	string jsonString;
     public GameObject pared;
-    public GameObject puerta;
+	public GameObject paredDaniada;
+	public GameObject paredDestruida;
+	public GameObject puerta;
 	public GameObject amarillo;
 
+	public GameObject humo;
+	public GameObject fuego;
 	public GameObject bombero;
+	public GameObject puntoInteres;
+
+	public GameObject destruirMuro;
+	public GameObject moverBombero;
 
 	public GameObject Carpeta;
 	//public Quaternion rotacion;
@@ -35,6 +43,8 @@ public class WebClient : MonoBehaviour
 	public int contador_combine_grids = 0;
 
 	GameObject CarpetaVacia;
+
+	int contador_steps;
 
 
 	Class_Paredes paredes_lista;
@@ -49,7 +59,7 @@ public class WebClient : MonoBehaviour
 		using (UnityWebRequest www = UnityWebRequest.Post(url, form))        
         {
             byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(data);
-            wwcw.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
+            www.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
             www.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
             //www.SetRequestHeader("Content-Type", "text/html");
             www.SetRequestHeader("Content-Type", "application/json");
@@ -71,7 +81,7 @@ public class WebClient : MonoBehaviour
 
 				//var resultado = (from lista in paredes_lista.Paredes select lista);
 
-				Invoke("Generar_Paredes", 1f);
+				Invoke("LeerID", 1f);
 				
 				
 
@@ -103,33 +113,77 @@ public class WebClient : MonoBehaviour
 		if(paredes_lista.ID[contador_id] == -1)
         {
 			contador_id++;
-			Invoke("Generar_Paredes", 0.5f);
+			Invoke("Generar_Paredes", 1.5f);
         }
+		else if (paredes_lista.ID[contador_id] == -2)
+		{
+			contador_id++;
+			Invoke("Generar_BomberoYEntorno", 1.5f);
+		}
+		else if (paredes_lista.ID[contador_id] == 0)
+		{
+			contador_id++;
+			Invoke("CrearHumo", 1.5f);
+		}
+		else if (paredes_lista.ID[contador_id] == 1)
+		{
+			contador_id++;
+			Invoke("PrendeFuego", 1.5f);
+		}
+		else if (paredes_lista.ID[contador_id] == 2)
+		{
+			contador_id++;
+			Invoke("MoverBombero", 1.5f);
+		}
+		else if (paredes_lista.ID[contador_id] == 4)
+		{
+			contador_id++;
+			Invoke("ActualizarMuro", 1.5f);
+		}
 
 
-    }
+
+
+
+	}
 
 	public void Generar_Paredes()
 	{
 
-
-
 		CarpetaVacia = Instantiate(Carpeta, transform.position, Quaternion.identity);
+		int[] lista_indices;
+		lista_indices = new int[paredes_lista.Tamanio[contador_tamanio]];
 
-		for (int index = 0; index < paredes_lista.Tamanio[contador_tamanio]; index++) {
-			int[] lista[index] = paredes_lista.Index[contador_index];
+		for (int index = 0; index < ((paredes_lista.Tamanio[contador_tamanio])); index++) {
+			lista_indices[index] = paredes_lista.Index[contador_index];
+			Debug.Log(contador_index);
 			contador_index++;
 		}
 		contador_tamanio++;
 
-		for (int i = 0; i < paredes_lista[0]; i++)
+		int pos_i;
+		pos_i = lista_indices[0];
+		Debug.Log(pos_i);
+		int val_paredes_i = pos_i;
+
+		int pos_j;
+		pos_j = lista_indices[1];
+		Debug.Log(pos_j);			
+		int val_paredes_j = pos_j;
+
+		int pos_k;
+		pos_k = lista_indices[2];
+		Debug.Log(pos_k);			
+		int val_paredes_k = pos_k;
+
+		for (int i = 0; i < val_paredes_i; i++)
 		{
-			for (int j = 0; j < paredes_lista[1]; j++)
+			for (int j = 0; j < val_paredes_j; j++)
 			{
-				for (int k = 0; k < paredes_lista[2]; k++)
+				for (int k = 0; k < val_paredes_k; k++)
 				{
 
-					if (paredes_lista.Paredes[count] != 0)
+					if (paredes_lista.Combine_grids[contador_combine_grids] != 0)
 					{
 						pos = new Vector3(j * 5f, 1f, i * 5f);
 						//rotacion = Quaternion.Euler(0,0,0);
@@ -163,17 +217,17 @@ public class WebClient : MonoBehaviour
 						Vector3 rotationVector = new Vector3(0, rotacionY, 0);
 						Quaternion rotation = Quaternion.Euler(rotationVector);
 
-						if (paredes_lista.Paredes[count] == 1)
+						if (paredes_lista.Combine_grids[contador_combine_grids] == 1)
 						{
 							Instantiate(pared, pos, rotation, CarpetaVacia.transform);
 						}
 
-						if (paredes_lista.Paredes[count] == 6)
+						if (paredes_lista.Combine_grids[contador_combine_grids] == 6)
 						{
 							Instantiate(puerta, pos, rotation, CarpetaVacia.transform);
 						}
 
-						if (paredes_lista.Paredes[count] == 4)
+						if (paredes_lista.Combine_grids[contador_combine_grids] == 4)
 						{
 							Instantiate(amarillo, pos, rotation, CarpetaVacia.transform);
 						}
@@ -181,28 +235,38 @@ public class WebClient : MonoBehaviour
 
 					}
 
-					count++;
+					contador_combine_grids++;
+					Debug.Log(contador_combine_grids);
 
 				}
 			}
 		}
-		Invoke("Generar_AgenteYFuego", 0.2f);
+		LeerID();
 	}
 
-	public void Generar_AgenteYFuego()
+	public void Generar_BomberoYEntorno()
 	{
 		int count = 0;
-		pos_Age = new int[2, 6, 8];
-		count = count + (contador_steps * 47);
 
-		for (int i = 0; i < 6; i++)
+		int contador_i;
+		contador_i = paredes_lista.Index[contador_index];
+		contador_index++;
+
+		int contador_j;
+		contador_j = paredes_lista.Index[contador_index];
+		contador_index++;
+
+		contador_tamanio++;
+
+
+
+		for (int i = 0; i < contador_i; i++)
 		{
-			for (int j = 0; j < 8; j++)
+			for (int j = 0; j < contador_j; j++)
 			{
 
-				//pos_Age[contador_steps, i, j] = paredes_lista.Grid[count];
 
-				if (paredes_lista.Grid[count] != 0)
+				if (paredes_lista.Combine_grids[contador_combine_grids] != 0)
 				{
 					pos = new Vector3(j * 5f, 1f, i * 5f);
 					//rotacion = Quaternion.Euler(0,0,0);
@@ -210,25 +274,217 @@ public class WebClient : MonoBehaviour
 					Vector3 rotationVector = new Vector3(0, 180, 0);
 					Quaternion rotation = Quaternion.Euler(rotationVector);
 
-					if (paredes_lista.Grid[count] == 3)
+					if (paredes_lista.Combine_grids[contador_combine_grids] == 1)
+					{
+						rotationVector = new Vector3(270, 0, 0);
+						rotation = Quaternion.Euler(rotationVector);
+						Debug.Log("CrearHumo");
+						Instantiate(humo, pos, rotation, CarpetaVacia.transform);
+					}
+
+					if (paredes_lista.Combine_grids[contador_combine_grids] == 2)
+					{
+						Debug.Log("CrearFuego");
+						Instantiate(fuego, pos, rotation, CarpetaVacia.transform);
+					}
+
+					if (paredes_lista.Combine_grids[contador_combine_grids] == 3)
 					{
 						Debug.Log("CrearBombero");
 						Instantiate(bombero, pos, rotation, CarpetaVacia.transform);
 					}
-
-
-					
+					if (paredes_lista.Combine_grids[contador_combine_grids] == 4 || paredes_lista.Combine_grids[contador_combine_grids] == 5)
+					{
+						Debug.Log("CrearBombero");
+						Instantiate(puntoInteres, pos, rotation, CarpetaVacia.transform);
+					}
 
 				}
 
-				count++;
+				contador_combine_grids++;
 			}
 		}
 
 		contador_steps++;
-		Invoke("Generar_Paredes", 5f);
+		LeerID();
 	}
+
+	public void CrearHumo()
+	{
+		int x = paredes_lista.Combine_grids[contador_combine_grids];
+		contador_combine_grids++;
+
+		int y = paredes_lista.Combine_grids[contador_combine_grids];
+		contador_combine_grids++;
+
+		pos = new Vector3(x * 5f, 1f, y * 5f);
+
+		Vector3 rotationVector = new Vector3(270, 0, 0);
+		Quaternion rotation = Quaternion.Euler(rotationVector);
+		Debug.Log("CrearHumo");
+		Instantiate(humo, pos, rotation, CarpetaVacia.transform);
+
+		contador_tamanio++;
+		LeerID();
+	}
+
+	public void PrendeFuego()
+	{
+		int x = paredes_lista.Combine_grids[contador_combine_grids];
+		contador_combine_grids++;
+
+		int y = paredes_lista.Combine_grids[contador_combine_grids];
+		contador_combine_grids++;
+
+		pos = new Vector3(x * 5f, 1f, y * 5f);
+
+		Vector3 rotationVector = new Vector3(270, 0, 0);
+		Quaternion rotation = Quaternion.Euler(rotationVector);
+		Debug.Log("CrearFuego");
+		Instantiate(fuego, pos, rotation, CarpetaVacia.transform);
+
+		contador_tamanio++;
+		LeerID();
+	}
+
+	public void MoverBombero()
+    {
+		int x = paredes_lista.Combine_grids[contador_combine_grids];
+		contador_combine_grids++;
+
+		int y = paredes_lista.Combine_grids[contador_combine_grids];
+		contador_combine_grids++;
+
+		int x_move = paredes_lista.Combine_grids[contador_combine_grids];
+		contador_combine_grids++;
+
+		int y_move = paredes_lista.Combine_grids[contador_combine_grids];
+		contador_combine_grids++;
+
+		pos = new Vector3(x * 5f, 1f, y * 5f);
+
+		Vector3 rotationVector = new Vector3(0, 0, 0);
+		Quaternion rotation = Quaternion.Euler(rotationVector);
+		Debug.Log("CrearParaMover");
+		GameObject Bombero = Instantiate(moverBombero, pos, rotation, CarpetaVacia.transform);
+		Bombero.GetComponent<MovePlayer>().x = x_move;
+		Bombero.GetComponent<MovePlayer>().y = y_move;
+
+		contador_tamanio++;
+		LeerID();
+	}
+
+	public void ActualizarMuro()
+	{
+		int x = paredes_lista.Index[contador_index];
+
+		int y = paredes_lista.Index[contador_index + 1];
+
+		int k = paredes_lista.Index[contador_index + 2];
+
+		pos = new Vector3(x * 5f, 1f, y * 5f);
+
+		//rotacion = Quaternion.Euler(0,0,0);
+		float rotacionY = 0f;
+
+
+		if (k == 0)
+		{
+			rotacionY = 90f;
+			pos.z = pos.z - 2f;
+		}
+
+		if (k == 1)
+		{
+			rotacionY = 0f;
+			pos.x = pos.x + 2f;
+		}
+
+		if (k == 2)
+		{
+			rotacionY = 90f;
+			pos.z = pos.z + 2f;
+		}
+
+		if (k == 3)
+		{
+			rotacionY = 0f;
+			pos.x = pos.x - 2f;
+		}
+
+
+		Vector3 rotationVector = new Vector3(0, 0, 0);
+		Quaternion rotation = Quaternion.Euler(rotationVector);
+		Debug.Log("CrearDestructor");
+		Instantiate(destruirMuro, pos, rotation, CarpetaVacia.transform);
+		Invoke("ConstruirMuro", 0.2f);
+	}
+
+	public void ConstruirMuro()
+    {
+		int x = paredes_lista.Index[contador_index];
+		contador_index++;
+
+		int y = paredes_lista.Index[contador_index];
+		contador_index++;
+
+		int k = paredes_lista.Index[contador_index];
+		contador_index++;
+
+		int vidas = paredes_lista.Index[contador_index];
+		contador_index++;
+
+		pos = new Vector3(x * 5f, 1f, y * 5f);
+
+		//rotacion = Quaternion.Euler(0,0,0);
+		float rotacionY = 0f;
+
+
+		if (k == 0)
+		{
+			rotacionY = 90f;
+			pos.z = pos.z - 2f;
+		}
+
+		if (k == 1)
+		{
+			rotacionY = 0f;
+			pos.x = pos.x + 2f;
+		}
+
+		if (k == 2)
+		{
+			rotacionY = 90f;
+			pos.z = pos.z + 2f;
+		}
+
+		if (k == 3)
+		{
+			rotacionY = 0f;
+			pos.x = pos.x - 2f;
+		}
+
+		Vector3 rotationVector = new Vector3(0, rotacionY, 0);
+		Quaternion rotation = Quaternion.Euler(rotationVector);
+
+
+		Debug.Log("CrearDestructor");
+		if(vidas == 2)
+        {
+			Instantiate(paredDaniada, pos, rotation, CarpetaVacia.transform);
+		}
+		if (vidas == 3)
+		{
+			Instantiate(paredDestruida, pos, rotation, CarpetaVacia.transform);
+		}
+
+		contador_tamanio++;
+		LeerID();
+	}
+
 }
+
+
 
  [System.Serializable]
 public class Class_Paredes
@@ -236,5 +492,5 @@ public class Class_Paredes
 	public int[] Combine_grids;
 	public int[] Index;
 	public int[] Tamanio;
-	public int[] ID
+	public int[] ID;
 }

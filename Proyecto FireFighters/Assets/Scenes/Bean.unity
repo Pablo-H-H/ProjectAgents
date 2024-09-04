@@ -184,11 +184,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pared: {fileID: 3324047532300507301, guid: 47996412d8bdcce4986954f29c2507b4, type: 3}
+  paredDaniada: {fileID: 3324047532300507301, guid: ecd01bab5b731904fbed2216f02ce707, type: 3}
+  paredDestruida: {fileID: 3324047532300507301, guid: 1cf17492cf63f4441994223da3de4549, type: 3}
   puerta: {fileID: 3324047532300507301, guid: 0514b7141faaa6a4f88f5a8452a24286, type: 3}
   amarillo: {fileID: 3324047532300507301, guid: 0741281bfb31541498f4e6c544b004d9, type: 3}
+  humo: {fileID: 5367999043253834862, guid: 41eea30caf17eb14baeb59fff0e5ef66, type: 3}
+  fuego: {fileID: 212154147685564730, guid: 43410a3ceb55e0341891fe2f5d7659e9, type: 3}
   bombero: {fileID: 4831411784280485144, guid: 8a721d8fd72de5748a652118bcf1cc45, type: 3}
+  puntoInteres: {fileID: 8440037151936147830, guid: ebbf0859c3558a847a3c20d24877de92, type: 3}
+  destruirMuro: {fileID: 3454826927421347016, guid: 7bb9559a79260364f9bc4b3090dbf2b8, type: 3}
+  moverBombero: {fileID: 3454826927421347016, guid: 7bd689072e3bbdf46a01eb192e12ba75, type: 3}
   Carpeta: {fileID: 9068466851340864679, guid: 5a416b7a0f177684db69bf0ba60c0f7e, type: 3}
   pos: {x: 0, y: 0, z: 0}
+  contador_id: 0
+  contador_tamanio: 0
+  contador_index: 0
+  contador_combine_grids: 0
 --- !u!4 &433099956
 Transform:
   m_ObjectHideFlags: 0
