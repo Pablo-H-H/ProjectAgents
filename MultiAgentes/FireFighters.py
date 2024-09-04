@@ -207,6 +207,9 @@ class FireFighter(Agent):
                 self.model.grid.move_agent(self, next)  # Mover al bombero
                 self.model.smoke[next[1]][next[0]] = 0  # Extinguir el fuego
                 self.action_points -= 3
+                self.model.size.append(2)
+                self.model.ID.append(2)
+                self.model.index.append([next[0], next[1]])
                 print(f"Bombero {self.unique_id} ha apagado fuego en ({next[0]}, {next[1]})")
             else:
                 self.add_points(self.action_points)
