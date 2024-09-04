@@ -12,6 +12,10 @@ class FireFighter(Agent):
         self.otherTargets = []
         self.way = []
 
+    def start_turn(self):
+        self.action_points = min(self.action_points + self.saved_ap, 8)
+        self.saved_ap = 0
+
     def find_target(self):
         points = []
         for i in range(self.model.height):
@@ -31,7 +35,9 @@ class FireFighter(Agent):
         return otherTargets
     
     def dijkstra(self, graph, start, end):
-        # Inicialización
+        if start == end:
+            return [start]
+        
         queue = []
         heapq.heappush(queue, (0, start))
         distances = {node: float('inf') for node in graph}
@@ -41,39 +47,35 @@ class FireFighter(Agent):
         while queue:
             current_distance, current_node = heapq.heappop(queue)
 
-            # Si llegamos al nodo final, terminamos
             if current_node == end:
                 break
 
-            # Si la distancia actual es mayor que la registrada, salte
             if current_distance > distances[current_node]:
                 continue
 
-            # Relajación de aristas
             for neighbor, weight in graph[current_node].items():
+                if neighbor not in distances:
+                    continue  # Skip if neighbor is not in graph
+
                 distance = current_distance + weight
 
-                # Si encontramos un camino más corto al vecino
                 if distance < distances[neighbor]:
                     distances[neighbor] = distance
                     predecessors[neighbor] = current_node
                     heapq.heappush(queue, (distance, neighbor))
 
-        # Si no se puede llegar al nodo final
-        if end not in predecessors or predecessors[end] is None:
-            print(f"No se puede encontrar un camino al nodo {end}")
-            return []
-
-        # Reconstrucción del camino desde el nodo final
         path = []
         step = end
         while step is not None:
             path.append(step)
             step = predecessors[step]
 
-        # Devuelve el camino en orden correcto (de inicio a fin)
-        path.reverse()
-        return path
+        if not path or distances[end] == float('inf'):
+            print(f"No se encontró un camino hacia {end}")
+            return []
+        
+        return path[::-1]
+
 
     def is_wall_in_direction(self, current, next):
         x1, y1 = current
@@ -93,11 +95,12 @@ class FireFighter(Agent):
 
     
     def add_points(self, remaining_ap):
-        """Guarda los puntos de acción restantes."""
-        if self.action_points < 8:  # Máximo de AP permitidos
-            self.action_points += remaining_ap
-            if self.action_points > 8:  # Límite superior de AP
-                self.action_points = 8
+        """Guarda los puntos de acción restantes, hasta un máximo de 8."""
+        self.saved_ap = remaining_ap
+        if self.action_points < 8:
+            self.action_points += self.saved_ap
+            if self.action_points > 8:
+                self.action_points = 8  # Límite superior de AP
 
 
     def is_a_damage_wall(self, current, next):
@@ -138,6 +141,7 @@ class FireFighter(Agent):
         return False
     
     def move(self, current, next):
+        
         # Verificar si hay una pared en la dirección del movimiento
         if self.is_wall_in_direction(current, next):
             # Si tiene suficientes puntos de acción para romper la pared
@@ -173,9 +177,9 @@ class FireFighter(Agent):
                 self.add_points(self.action_points)
                 print(f"Bombero {self.unique_id} no tiene suficientes puntos de acción para abrir la puerta en ({current[0]}, {current[1]})")
                 return False  # No pudo moverse
-
+        
         # Si hay fuego
-        elif self.model.smoke[next[1]][next[0]] == 2:
+        if self.model.smoke[next[1]][next[0]] == 2:
             if self.action_points >= 3:
                 self.model.grid.move_agent(self, next)  # Mover al bombero
                 self.model.smoke[next[1]][next[0]] = 0  # Extinguir el fuego
@@ -204,9 +208,24 @@ class FireFighter(Agent):
 
         return True  # Si se movió exitosamente
 
+    def find_nearest_smoke_or_fire(self):
+        nearest_point = None
+        min_distance = float('inf')
+        current_position = self.pos
 
+        # Iterar sobre toda la grid para encontrar humo (1) o fuego (2)
+        for i in range(self.model.height):
+            for j in range(self.model.width):
+                if self.model.smoke[i][j] == 1 or self.model.smoke[i][j] == 2:
+                    distance = abs(current_position[0] - j) + abs(current_position[1] - i)  # Distancia Manhattan
+                    if distance < min_distance:
+                        min_distance = distance
+                        nearest_point = (j, i)
+        
+        return nearest_point
 
     def step(self):
+        self.start_turn()
         print("El bombero este comenzando su turno en ({}, {})".format(self.pos[0], self.pos[1]))
         self.otherTargets = self.getTargets()
         if self.unique_id <= 2:
@@ -218,7 +237,42 @@ class FireFighter(Agent):
                 current = self.pos
                 next = self.way.pop(0)
                 self.move(current, next)
-            print(f"Bombero {self.unique_id} ha terminado su turno")
-            print(f"Ha terminado su turno en ({self.pos[0]}, {self.pos[1]})")        
+            print(f"Ha terminado su turno en ({self.pos[0]}, {self.pos[1]})")       
         else:
-            pass
+            if self.action_points > 0:
+                x, y = self.pos
+                possible_moves = self.model.grid.get_neighborhood(self.pos, moore=False, include_center=False)
+                for move in possible_moves:
+                    if self.is_wall_in_direction(self.pos, move):
+                    # Si hay una pared, verifica si puede romperla o dañarla
+                        if self.is_a_damage_wall(self.pos, move):
+                            print(f"Bombero {self.unique_id} detectó una pared dañada en {move}")
+                            continue  # Saltar el movimiento si es un muro dañado
+                        elif self.is_a_closed_door(self.pos, move):
+                            print(f"Bombero {self.unique_id} detectó una puerta cerrada en {move}")
+                            continue  # Saltar si hay una puerta cerrada
+                    else:
+                        # Si no hay paredes, ni puertas cerradas
+                        if self.action_points >= 3:  # Si tiene al menos 3 puntos de acción
+                            if self.model.smoke[move[1]][move[0]] == 2:
+                                # Si hay fuego, apaga el fuego
+                                self.move(self.pos, move)  # Mover y apagar fuego
+                                self.action_points -= 2
+                                print(f"Bombero {self.unique_id} apagó fuego en {move}")
+                            elif self.model.smoke[move[1]][move[0]] == 1:
+                                # Si hay humo, elimina el humo
+                                self.move(self.pos, move)  # Mover y eliminar humo
+                                self.action_points -= 1
+                                print(f"Bombero {self.unique_id} eliminó humo en {move}")
+                            else:
+                                # Movimiento normal sin obstáculos
+                                self.move(self.pos, move)
+                                self.action_points -= 1
+                                print(f"Bombero {self.unique_id} se movió a {move}")
+
+                    if self.action_points <= 0:
+                        break  # Terminar el turno si no tiene más puntos de acción
+
+            print(f"Ha terminado su turno en ({self.pos[0]}, {self.pos[1]})")
+        if self.action_points > 0:
+            self.add_points(self.action_points)
