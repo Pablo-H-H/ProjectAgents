@@ -165,6 +165,11 @@ public class WebClient : MonoBehaviour
 			contador_id++;
 			Invoke("CrearIP", 1.5f);
 		}
+		else if (paredes_lista.ID[contador_id] == 9)
+		{
+			contador_id++;
+			Invoke("DescubreIP", 1.5f);
+		}
 
 
 
