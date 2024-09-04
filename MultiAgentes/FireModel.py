@@ -38,6 +38,13 @@ class fireModel(Model):
 
         self.mapCoords = [(x,y) for x in range(self.width) for y in range(self.height)]
 
+
+        for i in range(numAgents):
+            start = [cell for cell in self.mapCoords if np.any(self.walls[cell[1]][cell[0]] == 6)]
+            agent = FireFighter(i, self)
+            self.grid.place_agent(agent,random.choice(start))
+            self.schedule.add(agent)
+
         # Initialize array of walls for UNITY
         self.combineGrids.append(self.walls.tolist())
         self.index.append([6, 8, 4])
@@ -51,12 +58,6 @@ class fireModel(Model):
         self.ID.append(-2)
 
         self.combineGrids = toList(self.combineGrids)
-
-        for i in range(numAgents):
-            start = [cell for cell in self.mapCoords if np.any(self.walls[cell[1]][cell[0]] == 6)]
-            agent = FireFighter(i, self)
-            self.grid.place_agent(agent,random.choice(start))
-            self.schedule.add(agent)
 
     def get_wall_direction(self, current_node, neighbor):
             x, y = current_node
