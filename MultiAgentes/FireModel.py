@@ -6,6 +6,8 @@ from MultiAgentes.FireBehaviours import smokePlace
 from MultiAgentes.FireFighters import FireFighter
 from MultiAgentes.toList import toList
 
+from MultiAgentes.Graph import create_graph
+
 class fireModel(Model):
     def __init__(self,file,W,H,numAgents):
         super().__init__()
@@ -31,6 +33,14 @@ class fireModel(Model):
         self.index.append([6, 8, 4])
         self.size.append(3)
         self.ID.append(-1)
+        self.cost_dict = {
+            0: 0,  # No hay obstáculo
+            1: 4,  # Pared
+            2: 2,  # Pared dañada
+            4: 3,  # Puerta cerrada
+            5: 0,   # Puerta abierta
+            6: 4   # Entrada
+        }
 
         # self.combineGrids.append(self.grid)
         # self.index.append([6, 8])
@@ -64,13 +74,12 @@ class fireModel(Model):
         print(f"\n--- Step {self.schedule.steps + 1} ---")
         for agent in self.schedule.agents:
             agent.step()  # Cada bombero realiza su turno completo
-
+            #create_graph(self.walls)
             if not self.model_is_running:
                 break
 
             # Después de cada turno de un bombero, el mapa se actualiza
             smokePlace(self)
-
             # Verificar condiciones de victoria y derrota
             if self.saved_victims >= 7:
                 print("¡Victoria! Se han rescatado suficientes víctimas.")
@@ -87,6 +96,32 @@ class fireModel(Model):
         print(f"Marcadores de daño: {self.damage_markers}")
 
         self.schedule.steps += 1
+
+    def create_graph(walls):
+        h, w = walls.shape[:2]
+        graph = {}
+
+        # Iterar sobre cada celda de la cuadrícula
+        for i in range(h):
+            for j in range(w):
+                current_node = (i, j)
+                graph[current_node] = {}
+
+                # Revisar las celdas adyacentes (arriba, abajo, izquierda, derecha)
+                if i > 0:  # Arriba
+                    cost = cost_dict[walls[i][j][0]]
+                    graph[current_node][(i-1, j)] = cost
+                if i < h - 1:  # Abajo
+                    cost = cost_dict[walls[i][j][2]]
+                    graph[current_node][(i+1, j)] = cost
+                if j > 0:  # Izquierda
+                    cost = cost_dict[walls[i][j][3]]
+                    graph[current_node][(i, j-1)] = cost
+                if j < w - 1:  # Derecha
+                    cost = cost_dict[walls[i][j][1]]
+                    graph[current_node][(i, j+1)] = cost
+
+        return graph
 
 
 def get_grid(model):
