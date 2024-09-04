@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Pared
   - Humo
+  - Fuego
+  - InterestPoint
   layers:
   - Default
   - TransparentFX

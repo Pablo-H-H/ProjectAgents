@@ -23,13 +23,18 @@ public class WebClient : MonoBehaviour
 	public GameObject paredDestruida;
 	public GameObject puerta;
 	public GameObject amarillo;
+	public GameObject DescubrirIP;
 
 	public GameObject humo;
 	public GameObject fuego;
 	public GameObject bombero;
-	public GameObject puntoInteres;
+	public GameObject destruir_humo_fuego;
 
+	public GameObject puntoInteres;
+	public GameObject BomberoCarga;
+	public GameObject BomberoAtaca;
 	public GameObject destruirMuro;
+	public GameObject destruirIP;
 	public GameObject moverBombero;
 
 	public GameObject Carpeta;
@@ -139,6 +144,26 @@ public class WebClient : MonoBehaviour
 		{
 			contador_id++;
 			Invoke("ActualizarMuro", 1.5f);
+		}
+		else if (paredes_lista.ID[contador_id] == 5)
+		{
+			contador_id++;
+			Invoke("BomberoCargando", 1.5f);
+		}
+		else if (paredes_lista.ID[contador_id] == 6)
+		{
+			contador_id++;
+			Invoke("RomperUsar", 1.5f);
+		}
+		else if (paredes_lista.ID[contador_id] == 7)
+		{
+			contador_id++;
+			Invoke("EliminarIP", 1.5f);
+		}
+		else if (paredes_lista.ID[contador_id] == 8)
+		{
+			contador_id++;
+			Invoke("CrearIP", 1.5f);
 		}
 
 
@@ -374,6 +399,24 @@ public class WebClient : MonoBehaviour
 		LeerID();
 	}
 
+	public void ExtinguirFuegoHumo()
+	{
+		int x = paredes_lista.Index[contador_index];
+		contador_index++;
+
+		int y = paredes_lista.Index[contador_index];
+		contador_index++;
+
+		pos = new Vector3(x * 5f, 1f, y * 5f);
+
+		Vector3 rotationVector = new Vector3(0, 0, 0);
+		Quaternion rotation = Quaternion.Euler(rotationVector);
+		Instantiate(destruir_humo_fuego, pos, rotation, CarpetaVacia.transform);
+
+		contador_tamanio++;
+		LeerID();
+	}
+
 	public void ActualizarMuro()
 	{
 		int x = paredes_lista.Index[contador_index];
@@ -481,6 +524,98 @@ public class WebClient : MonoBehaviour
 		contador_tamanio++;
 		LeerID();
 	}
+
+	public void BomberoCargando()
+	{
+		int x = paredes_lista.Combine_grids[contador_combine_grids];
+		contador_combine_grids++;
+
+		int y = paredes_lista.Combine_grids[contador_combine_grids];
+		contador_combine_grids++;
+
+		pos = new Vector3(x * 5f, 1f, y * 5f);
+
+		Vector3 rotationVector = new Vector3(0, 0, 0);
+		Quaternion rotation = Quaternion.Euler(rotationVector);
+		Debug.Log("CrearFuego");
+		Instantiate(BomberoCarga, pos, rotation, CarpetaVacia.transform);
+
+		contador_tamanio++;
+		LeerID();
+	}
+
+	public void RomperUsar()
+	{
+		int x = paredes_lista.Combine_grids[contador_combine_grids];
+		contador_combine_grids++;
+
+		int y = paredes_lista.Combine_grids[contador_combine_grids];
+		contador_combine_grids++;
+
+		pos = new Vector3(x * 5f, 1f, y * 5f);
+
+		Vector3 rotationVector = new Vector3(0, 0, 0);
+		Quaternion rotation = Quaternion.Euler(rotationVector);
+		Debug.Log("CrearFuego");
+		Instantiate(BomberoAtaca, pos, rotation, CarpetaVacia.transform);
+
+		contador_tamanio++;
+		LeerID();
+	}
+
+	public void EliminarIP()
+	{
+		int x = paredes_lista.Combine_grids[contador_combine_grids];
+		contador_combine_grids++;
+
+		int y = paredes_lista.Combine_grids[contador_combine_grids];
+		contador_combine_grids++;
+
+		pos = new Vector3(x * 5f, 1f, y * 5f);
+
+		Vector3 rotationVector = new Vector3(0, 0, 0);
+		Quaternion rotation = Quaternion.Euler(rotationVector);
+		Debug.Log("CrearFuego");
+		Instantiate(destruirIP, pos, rotation, CarpetaVacia.transform);
+
+		contador_tamanio++;
+		LeerID();
+	}
+	public void CrearIP()
+	{
+		int x = paredes_lista.Combine_grids[contador_combine_grids];
+		contador_combine_grids++;
+
+		int y = paredes_lista.Combine_grids[contador_combine_grids];
+		contador_combine_grids++;
+
+		pos = new Vector3(x * 5f, 1f, y * 5f);
+
+		Vector3 rotationVector = new Vector3(0, 0, 0);
+		Quaternion rotation = Quaternion.Euler(rotationVector);
+		Instantiate(puntoInteres, pos, rotation, CarpetaVacia.transform);
+
+		contador_tamanio++;
+		LeerID();
+	}
+	public void DescubreIP()
+	{
+		int x = paredes_lista.Combine_grids[contador_combine_grids];
+		contador_combine_grids++;
+
+		int y = paredes_lista.Combine_grids[contador_combine_grids];
+		contador_combine_grids++;
+
+		pos = new Vector3(x * 5f, 1f, y * 5f);
+
+		Vector3 rotationVector = new Vector3(0, 0, 0);
+		Quaternion rotation = Quaternion.Euler(rotationVector);
+		Instantiate(DescubrirIP, pos, rotation, CarpetaVacia.transform);
+
+		contador_tamanio++;
+		LeerID();
+	}
+	
 
 }
 

@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     public int x_towards;
     public int y_towards;
     public bool movimiento = false;
+    public bool pateando = false;
 
     public float res_x;
     public float res_y;
@@ -32,14 +33,10 @@ public class PlayerMovement : MonoBehaviour
 
         transform.Translate(x * Time.deltaTime * runSpeed, 0, y * Time.deltaTime * runSpeed);
 
-        if (Input.GetKeyDown(KeyCode.P))
+        if (pateando)
         {
             animator.SetTrigger("Patear");
-        }
-
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            animator.SetTrigger("Danio");
+            Invoke("NegarPateando", 0.75f);
         }
 
         if (movimiento)
@@ -61,5 +58,10 @@ public class PlayerMovement : MonoBehaviour
         }
 
     }
+    public void NegarPateando()
+    {
+        pateando = false;
+
+	}
 
 }

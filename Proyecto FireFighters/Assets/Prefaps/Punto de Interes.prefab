@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3371982834041796799}
   m_Layer: 0
   m_Name: Punto de Interes
-  m_TagString: Untagged
+  m_TagString: InterestPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
