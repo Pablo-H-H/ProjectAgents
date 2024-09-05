@@ -20,7 +20,7 @@ public class PlayerAtaca : MonoBehaviour
 		if (other.gameObject.tag == "Player")
 		{
 			GameObject playerRescued = other.gameObject;
-			playerRescued.GetComponent<PlayerMovement>().pateando = true;
+			//playerRescued.GetComponent<PlayerMovement>().pateando = true;
 
 
 		}

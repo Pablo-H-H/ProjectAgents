@@ -49,6 +49,8 @@ public class WebClient : MonoBehaviour
 
 	GameObject CarpetaVacia;
 
+	public GameObject[] Bomberos = new GameObject[5];
+
 
 
 	Class_Paredes paredes_lista;
@@ -124,6 +126,11 @@ public class WebClient : MonoBehaviour
 		{
 			contador_id++;
 			Invoke("Generar_BomberoYEntorno", 1f);
+		}
+		else if (paredes_lista.ID[contador_id] == -3)
+		{
+			contador_id++;
+			Invoke("Generar_Bomberos", 1f);
 		}
 		else if (paredes_lista.ID[contador_id] == 0)
 		{
@@ -347,6 +354,32 @@ public class WebClient : MonoBehaviour
 		LeerID();
 	}
 
+	public void Generar_Bomberos()
+    {
+		int i= paredes_lista.Index[contador_index];
+		contador_index++;
+
+		int j = paredes_lista.Index[contador_index];
+		contador_index++;
+
+		int id = paredes_lista.Index[contador_index];
+		contador_index++;
+
+		pos = new Vector3(j * 5f, 1f, i * 5f);
+		//rotacion = Quaternion.Euler(0,0,0);
+
+		Vector3 rotationVector = new Vector3(0, 180, 0);
+		Quaternion rotation = Quaternion.Euler(rotationVector);
+
+		Debug.Log(id);
+
+		Bomberos[id] = Instantiate(bombero, pos, rotation);
+		//"Bombero_" + id = Instantiate(bombero, pos, rotation, CarpetaVacia.transform);
+
+		contador_Size++;
+		LeerID();
+	}
+
 	public void CrearHumo()
 	{
 		int x = paredes_lista.Index[contador_index];
@@ -392,11 +425,14 @@ public class WebClient : MonoBehaviour
 	public void MoverBombero()
     {
 		Debug.Log("MoverBombero");
+		/* Posicion Original
 		int x = paredes_lista.Index[contador_index];
 		contador_index++;
 
 		int y = paredes_lista.Index[contador_index];
 		contador_index++;
+		*/
+
 
 		int x_move = paredes_lista.Index[contador_index] * 5;
 		contador_index++;
@@ -404,14 +440,13 @@ public class WebClient : MonoBehaviour
 		int y_move = paredes_lista.Index[contador_index] * 5;
 		contador_index++;
 
-		pos = new Vector3(x * 5f, 1f, y * 5f);
+		int id = paredes_lista.Index[contador_index];
+		contador_index++;
 
-		Vector3 rotationVector = new Vector3(0, 0, 0);
-		Quaternion rotation = Quaternion.Euler(rotationVector);
-		Debug.Log("CrearParaMover");
-		GameObject Bombero = Instantiate(moverBombero, pos, rotation, CarpetaVacia.transform);
-		Bombero.GetComponent<MovePlayer>().x = x_move;
-		Bombero.GetComponent<MovePlayer>().y = y_move;
+		PlayerMovement script_Bomberos = Bomberos[id].GetComponent<PlayerMovement>();
+		script_Bomberos.x_towards = x_move;
+		script_Bomberos.y_towards = y_move;
+		script_Bomberos.movimiento = true;
 
 		contador_Size++;
 		LeerID();
@@ -550,18 +585,21 @@ public class WebClient : MonoBehaviour
 	public void BomberoCargando()
 	{
 		Debug.Log("BomberoCargando");
-		int x = paredes_lista.Index[contador_index];
+
+		int id = paredes_lista.Index[contador_index];
 		contador_index++;
 
-		int y = paredes_lista.Index[contador_index];
-		contador_index++;
-
-		pos = new Vector3(x * 5f, 1f, y * 5f);
-
-		Vector3 rotationVector = new Vector3(0, 0, 0);
-		Quaternion rotation = Quaternion.Euler(rotationVector);
-		Debug.Log("CrearFuego");
-		Instantiate(BomberoCarga, pos, rotation, CarpetaVacia.transform);
+		GameObject playerRescued = Bomberos[id].transform.GetChild(0).gameObject;
+		if (playerRescued.GetComponent<Activado>().estado_Activado == 0)
+		{
+			playerRescued.SetActive(true);
+			playerRescued.GetComponent<Activado>().cambiarEstado();
+		}
+		else
+		{
+			playerRescued.GetComponent<Activado>().cambiarEstado();
+			playerRescued.SetActive(false);
+		}
 
 		contador_Size++;
 		LeerID();
@@ -570,18 +608,11 @@ public class WebClient : MonoBehaviour
 	public void RomperUsar()
 	{
 		Debug.Log("RomperUsar");
-		int x = paredes_lista.Index[contador_index];
+
+		int id = paredes_lista.Index[contador_index];
 		contador_index++;
 
-		int y = paredes_lista.Index[contador_index];
-		contador_index++;
-
-		pos = new Vector3(x * 5f, 1f, y * 5f);
-
-		Vector3 rotationVector = new Vector3(0, 0, 0);
-		Quaternion rotation = Quaternion.Euler(rotationVector);
-		Debug.Log("CrearFuego");
-		Instantiate(BomberoAtaca, pos, rotation, CarpetaVacia.transform);
+		Bomberos[id].GetComponent<PlayerMovement>().Pateando();
 
 		contador_Size++;
 		LeerID();

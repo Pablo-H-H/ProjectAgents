@@ -205,6 +205,13 @@ MonoBehaviour:
   contador_Size: 0
   contador_index: 0
   contador_Grids: 0
+  Bomberos:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!4 &433099956
 Transform:
   m_ObjectHideFlags: 0

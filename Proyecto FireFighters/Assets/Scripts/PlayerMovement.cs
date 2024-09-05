@@ -10,7 +10,6 @@ public class PlayerMovement : MonoBehaviour
     public int x_towards;
     public int y_towards;
     public bool movimiento = false;
-    public bool pateando = false;
 
     public float res_x;
     public float res_y;
@@ -33,12 +32,6 @@ public class PlayerMovement : MonoBehaviour
 
         transform.Translate(x * Time.deltaTime * runSpeed, 0, y * Time.deltaTime * runSpeed);
 
-        if (pateando)
-        {
-            animator.SetTrigger("Patear");
-            Invoke("NegarPateando", 0.75f);
-        }
-
         if (movimiento)
         {
             Vector3 objetivo = new Vector3(x_towards, 0, y_towards);
@@ -58,10 +51,10 @@ public class PlayerMovement : MonoBehaviour
         }
 
     }
-    public void NegarPateando()
-    {
-        pateando = false;
 
-	}
+    public void Pateando()
+    {
+        animator.SetTrigger("Patear");
+    }
 
 }
