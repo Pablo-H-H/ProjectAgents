@@ -202,9 +202,9 @@ MonoBehaviour:
   Carpeta: {fileID: 9068466851340864679, guid: 5a416b7a0f177684db69bf0ba60c0f7e, type: 3}
   pos: {x: 0, y: 0, z: 0}
   contador_id: 0
-  contador_tamanio: 0
+  contador_Size: 0
   contador_index: 0
-  contador_combine_grids: 0
+  contador_Grids: 0
 --- !u!4 &433099956
 Transform:
   m_ObjectHideFlags: 0
@@ -411,13 +411,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1720122844}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.69528586, y: 0, z: 0, w: 0.7187333}
+  m_LocalPosition: {x: 17, y: 33.65, z: 10.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 88.1, y: 0, z: 0}
 --- !u!114 &1720122848
 MonoBehaviour:
   m_ObjectHideFlags: 0

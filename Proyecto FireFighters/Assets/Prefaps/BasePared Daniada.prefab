@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7260919725076092142}
   - component: {fileID: 343714678523246131}
   - component: {fileID: -5172290076078112565}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: BasePared Daniada
   m_TagString: Pared
   m_Icon: {fileID: 0}

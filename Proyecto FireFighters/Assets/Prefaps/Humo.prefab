@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4053742139957694717}
   - component: {fileID: 5841293663467339027}
   - component: {fileID: 275984805046873474}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Humo
   m_TagString: Humo
   m_Icon: {fileID: 0}

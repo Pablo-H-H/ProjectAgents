@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3154378601415648077}
   - component: {fileID: 7260919725076092142}
   - component: {fileID: 343714678523246131}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: BaseAmarillo
   m_TagString: Untagged
   m_Icon: {fileID: 0}

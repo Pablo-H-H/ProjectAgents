@@ -43,9 +43,9 @@ public class WebClient : MonoBehaviour
 	int[,,] pos_Age;
 
 	public int contador_id = 0;
-	public int contador_tamanio = 0;
+	public int contador_Size = 0;
 	public int contador_index = 0;
-	public int contador_combine_grids = 0;
+	public int contador_Grids = 0;
 
 	GameObject CarpetaVacia;
 
@@ -115,60 +115,67 @@ public class WebClient : MonoBehaviour
 
 	public void LeerID()
     {
+		Debug.Log("Leer");
+		Debug.Log(paredes_lista.ID[contador_id]);
 		if(paredes_lista.ID[contador_id] == -1)
         {
 			contador_id++;
-			Invoke("Generar_Paredes", 1.5f);
+			Invoke("Generar_Paredes", 1f);
         }
 		else if (paredes_lista.ID[contador_id] == -2)
 		{
 			contador_id++;
-			Invoke("Generar_BomberoYEntorno", 1.5f);
+			Invoke("Generar_BomberoYEntorno", 1f);
 		}
 		else if (paredes_lista.ID[contador_id] == 0)
 		{
 			contador_id++;
-			Invoke("CrearHumo", 1.5f);
+			Invoke("CrearHumo", 1f);
 		}
 		else if (paredes_lista.ID[contador_id] == 1)
 		{
 			contador_id++;
-			Invoke("PrendeFuego", 1.5f);
+			Invoke("PrendeFuego", 1f);
 		}
 		else if (paredes_lista.ID[contador_id] == 2)
 		{
 			contador_id++;
-			Invoke("MoverBombero", 1.5f);
+			Invoke("MoverBombero", 1f);
+		}
+		else if (paredes_lista.ID[contador_id] == 3)
+		{
+			contador_id++;
+			Invoke("ExtinguirFuegoHumo", 1f);
 		}
 		else if (paredes_lista.ID[contador_id] == 4)
 		{
 			contador_id++;
-			Invoke("ActualizarMuro", 1.5f);
+			Invoke("ActualizarMuro", 1f);
 		}
 		else if (paredes_lista.ID[contador_id] == 5)
 		{
 			contador_id++;
-			Invoke("BomberoCargando", 1.5f);
+			Invoke("BomberoCargando", 1f);
 		}
 		else if (paredes_lista.ID[contador_id] == 6)
 		{
 			contador_id++;
-			Invoke("RomperUsar", 1.5f);
+			Invoke("RomperUsar", 1f);
 		}
 		else if (paredes_lista.ID[contador_id] == 7)
 		{
 			contador_id++;
-			Invoke("EliminarIP", 1.5f);
+			Invoke("EliminarIP", 1f);
 		}
 		else if (paredes_lista.ID[contador_id] == 8)
 		{
 			contador_id++;
-			Invoke("CrearIP", 1.5f);
+			Invoke("CrearIP", 1f);
 		}
 		else if (paredes_lista.ID[contador_id] == 9)
 		{
 			contador_id++;
-			Invoke("DescubreIP", 1.5f);
+			Invoke("DescubreIP", 1f);
 		}
 
 
@@ -179,17 +186,17 @@ public class WebClient : MonoBehaviour
 
 	public void Generar_Paredes()
 	{
-
+		Debug.Log("Generar_Paredes");
 		CarpetaVacia = Instantiate(Carpeta, transform.position, Quaternion.identity);
 		int[] lista_indices;
-		lista_indices = new int[paredes_lista.Tamanio[contador_tamanio]];
+		lista_indices = new int[paredes_lista.Size[contador_Size]];
 
-		for (int index = 0; index < ((paredes_lista.Tamanio[contador_tamanio])); index++) {
+		for (int index = 0; index < ((paredes_lista.Size[contador_Size])); index++) {
 			lista_indices[index] = paredes_lista.Index[contador_index];
 			Debug.Log(contador_index);
 			contador_index++;
 		}
-		contador_tamanio++;
+		contador_Size++;
 
 		int pos_i;
 		pos_i = lista_indices[0];
@@ -213,7 +220,7 @@ public class WebClient : MonoBehaviour
 				for (int k = 0; k < val_paredes_k; k++)
 				{
 
-					if (paredes_lista.Combine_grids[contador_combine_grids] != 0)
+					if (paredes_lista.Grids[contador_Grids] != 0)
 					{
 						pos = new Vector3(j * 5f, 1f, i * 5f);
 						//rotacion = Quaternion.Euler(0,0,0);
@@ -229,7 +236,7 @@ public class WebClient : MonoBehaviour
 						if (k == 1)
 						{
 							rotacionY = 0f;
-							pos.x = pos.x + 2f;
+							pos.x = pos.x - 2f;
 						}
 
 						if (k == 2)
@@ -241,23 +248,23 @@ public class WebClient : MonoBehaviour
 						if (k == 3)
 						{
 							rotacionY = 0f;
-							pos.x = pos.x - 2f;
+							pos.x = pos.x + 2f;
 						}
 
 						Vector3 rotationVector = new Vector3(0, rotacionY, 0);
 						Quaternion rotation = Quaternion.Euler(rotationVector);
 
-						if (paredes_lista.Combine_grids[contador_combine_grids] == 1)
+						if (paredes_lista.Grids[contador_Grids] == 1)
 						{
 							Instantiate(pared, pos, rotation, CarpetaVacia.transform);
 						}
 
-						if (paredes_lista.Combine_grids[contador_combine_grids] == 6)
+						if (paredes_lista.Grids[contador_Grids] == 6)
 						{
 							Instantiate(puerta, pos, rotation, CarpetaVacia.transform);
 						}
 
-						if (paredes_lista.Combine_grids[contador_combine_grids] == 4)
+						if (paredes_lista.Grids[contador_Grids] == 4)
 						{
 							Instantiate(amarillo, pos, rotation, CarpetaVacia.transform);
 						}
@@ -265,8 +272,8 @@ public class WebClient : MonoBehaviour
 
 					}
 
-					contador_combine_grids++;
-					Debug.Log(contador_combine_grids);
+					contador_Grids++;
+					Debug.Log(contador_Grids);
 
 				}
 			}
@@ -276,6 +283,7 @@ public class WebClient : MonoBehaviour
 
 	public void Generar_BomberoYEntorno()
 	{
+		Debug.Log("Generar_BomberoYEntorno");
 		int count = 0;
 
 		int contador_i;
@@ -286,7 +294,7 @@ public class WebClient : MonoBehaviour
 		contador_j = paredes_lista.Index[contador_index];
 		contador_index++;
 
-		contador_tamanio++;
+		contador_Size++;
 
 
 
@@ -296,7 +304,7 @@ public class WebClient : MonoBehaviour
 			{
 
 
-				if (paredes_lista.Combine_grids[contador_combine_grids] != 0)
+				if (paredes_lista.Grids[contador_Grids] != 0)
 				{
 					pos = new Vector3(j * 5f, 1f, i * 5f);
 					//rotacion = Quaternion.Euler(0,0,0);
@@ -304,7 +312,7 @@ public class WebClient : MonoBehaviour
 					Vector3 rotationVector = new Vector3(0, 180, 0);
 					Quaternion rotation = Quaternion.Euler(rotationVector);
 
-					if (paredes_lista.Combine_grids[contador_combine_grids] == 1)
+					if (paredes_lista.Grids[contador_Grids] == 1)
 					{
 						rotationVector = new Vector3(270, 0, 0);
 						rotation = Quaternion.Euler(rotationVector);
@@ -312,18 +320,18 @@ public class WebClient : MonoBehaviour
 						Instantiate(humo, pos, rotation, CarpetaVacia.transform);
 					}
 
-					if (paredes_lista.Combine_grids[contador_combine_grids] == 2)
+					if (paredes_lista.Grids[contador_Grids] == 2)
 					{
 						Debug.Log("CrearFuego");
 						Instantiate(fuego, pos, rotation, CarpetaVacia.transform);
 					}
 
-					if (paredes_lista.Combine_grids[contador_combine_grids] == 3)
+					if (paredes_lista.Grids[contador_Grids] == 3)
 					{
 						Debug.Log("CrearBombero");
 						Instantiate(bombero, pos, rotation, CarpetaVacia.transform);
 					}
-					if (paredes_lista.Combine_grids[contador_combine_grids] == 4 || paredes_lista.Combine_grids[contador_combine_grids] == 5)
+					if (paredes_lista.Grids[contador_Grids] == 4 || paredes_lista.Grids[contador_Grids] == 5)
 					{
 						Debug.Log("CrearBombero");
 						Instantiate(puntoInteres, pos, rotation, CarpetaVacia.transform);
@@ -331,7 +339,7 @@ public class WebClient : MonoBehaviour
 
 				}
 
-				contador_combine_grids++;
+				contador_Grids++;
 			}
 		}
 
@@ -341,11 +349,12 @@ public class WebClient : MonoBehaviour
 
 	public void CrearHumo()
 	{
-		int x = paredes_lista.Combine_grids[contador_combine_grids];
-		contador_combine_grids++;
+		Debug.Log("CrearHumo");
+		int x = paredes_lista.Index[contador_index];
+		contador_Grids++;
 
-		int y = paredes_lista.Combine_grids[contador_combine_grids];
-		contador_combine_grids++;
+		int y = paredes_lista.Index[contador_index];
+		contador_Grids++;
 
 		pos = new Vector3(x * 5f, 1f, y * 5f);
 
@@ -354,17 +363,18 @@ public class WebClient : MonoBehaviour
 		Debug.Log("CrearHumo");
 		Instantiate(humo, pos, rotation, CarpetaVacia.transform);
 
-		contador_tamanio++;
+		contador_Size++;
 		LeerID();
 	}
 
 	public void PrendeFuego()
 	{
-		int x = paredes_lista.Combine_grids[contador_combine_grids];
-		contador_combine_grids++;
+		Debug.Log("PrendeFuego");
+		int x = paredes_lista.Index[contador_index];
+		contador_index++;
 
-		int y = paredes_lista.Combine_grids[contador_combine_grids];
-		contador_combine_grids++;
+		int y = paredes_lista.Index[contador_index];
+		contador_index++;
 
 		pos = new Vector3(x * 5f, 1f, y * 5f);
 
@@ -373,23 +383,24 @@ public class WebClient : MonoBehaviour
 		Debug.Log("CrearFuego");
 		Instantiate(fuego, pos, rotation, CarpetaVacia.transform);
 
-		contador_tamanio++;
+		contador_Size++;
 		LeerID();
 	}
 
 	public void MoverBombero()
     {
-		int x = paredes_lista.Combine_grids[contador_combine_grids];
-		contador_combine_grids++;
+		Debug.Log("MoverBombero");
+		int x = paredes_lista.Index[contador_index];
+		contador_index++;
 
-		int y = paredes_lista.Combine_grids[contador_combine_grids];
-		contador_combine_grids++;
+		int y = paredes_lista.Index[contador_index];
+		contador_index++;
 
-		int x_move = paredes_lista.Combine_grids[contador_combine_grids];
-		contador_combine_grids++;
+		int x_move = paredes_lista.Index[contador_index] * 5;
+		contador_index++;
 
-		int y_move = paredes_lista.Combine_grids[contador_combine_grids];
-		contador_combine_grids++;
+		int y_move = paredes_lista.Index[contador_index] * 5;
+		contador_index++;
 
 		pos = new Vector3(x * 5f, 1f, y * 5f);
 
@@ -400,12 +411,13 @@ public class WebClient : MonoBehaviour
 		Bombero.GetComponent<MovePlayer>().x = x_move;
 		Bombero.GetComponent<MovePlayer>().y = y_move;
 
-		contador_tamanio++;
+		contador_Size++;
 		LeerID();
 	}
 
 	public void ExtinguirFuegoHumo()
 	{
+		Debug.Log("ExtinguirFuegoHumo");
 		int x = paredes_lista.Index[contador_index];
 		contador_index++;
 
@@ -418,12 +430,13 @@ public class WebClient : MonoBehaviour
 		Quaternion rotation = Quaternion.Euler(rotationVector);
 		Instantiate(destruir_humo_fuego, pos, rotation, CarpetaVacia.transform);
 
-		contador_tamanio++;
+		contador_Size++;
 		LeerID();
 	}
 
 	public void ActualizarMuro()
 	{
+		Debug.Log("ActualizarMuro");
 		int x = paredes_lista.Index[contador_index];
 
 		int y = paredes_lista.Index[contador_index + 1];
@@ -445,7 +458,7 @@ public class WebClient : MonoBehaviour
 		if (k == 1)
 		{
 			rotacionY = 0f;
-			pos.x = pos.x + 2f;
+			pos.x = pos.x - 2f;
 		}
 
 		if (k == 2)
@@ -457,7 +470,7 @@ public class WebClient : MonoBehaviour
 		if (k == 3)
 		{
 			rotacionY = 0f;
-			pos.x = pos.x - 2f;
+			pos.x = pos.x + 2f;
 		}
 
 
@@ -465,11 +478,13 @@ public class WebClient : MonoBehaviour
 		Quaternion rotation = Quaternion.Euler(rotationVector);
 		Debug.Log("CrearDestructor");
 		Instantiate(destruirMuro, pos, rotation, CarpetaVacia.transform);
+
 		Invoke("ConstruirMuro", 0.2f);
 	}
 
 	public void ConstruirMuro()
     {
+		Debug.Log("ConstruirMuro");
 		int x = paredes_lista.Index[contador_index];
 		contador_index++;
 
@@ -497,7 +512,7 @@ public class WebClient : MonoBehaviour
 		if (k == 1)
 		{
 			rotacionY = 0f;
-			pos.x = pos.x + 2f;
+			pos.x = pos.x - 2f;
 		}
 
 		if (k == 2)
@@ -509,7 +524,7 @@ public class WebClient : MonoBehaviour
 		if (k == 3)
 		{
 			rotacionY = 0f;
-			pos.x = pos.x - 2f;
+			pos.x = pos.x + 2f;
 		}
 
 		Vector3 rotationVector = new Vector3(0, rotacionY, 0);
@@ -526,17 +541,18 @@ public class WebClient : MonoBehaviour
 			Instantiate(paredDestruida, pos, rotation, CarpetaVacia.transform);
 		}
 
-		contador_tamanio++;
+		contador_Size++;
 		LeerID();
 	}
 
 	public void BomberoCargando()
 	{
-		int x = paredes_lista.Combine_grids[contador_combine_grids];
-		contador_combine_grids++;
+		Debug.Log("BomberoCargando");
+		int x = paredes_lista.Index[contador_index];
+		contador_index++;
 
-		int y = paredes_lista.Combine_grids[contador_combine_grids];
-		contador_combine_grids++;
+		int y = paredes_lista.Index[contador_index];
+		contador_index++;
 
 		pos = new Vector3(x * 5f, 1f, y * 5f);
 
@@ -545,17 +561,18 @@ public class WebClient : MonoBehaviour
 		Debug.Log("CrearFuego");
 		Instantiate(BomberoCarga, pos, rotation, CarpetaVacia.transform);
 
-		contador_tamanio++;
+		contador_Size++;
 		LeerID();
 	}
 
 	public void RomperUsar()
 	{
-		int x = paredes_lista.Combine_grids[contador_combine_grids];
-		contador_combine_grids++;
+		Debug.Log("RomperUsar");
+		int x = paredes_lista.Index[contador_index];
+		contador_index++;
 
-		int y = paredes_lista.Combine_grids[contador_combine_grids];
-		contador_combine_grids++;
+		int y = paredes_lista.Index[contador_index];
+		contador_index++;
 
 		pos = new Vector3(x * 5f, 1f, y * 5f);
 
@@ -564,17 +581,18 @@ public class WebClient : MonoBehaviour
 		Debug.Log("CrearFuego");
 		Instantiate(BomberoAtaca, pos, rotation, CarpetaVacia.transform);
 
-		contador_tamanio++;
+		contador_Size++;
 		LeerID();
 	}
 
 	public void EliminarIP()
 	{
-		int x = paredes_lista.Combine_grids[contador_combine_grids];
-		contador_combine_grids++;
+		Debug.Log("EliminarIP");
+		int x = paredes_lista.Index[contador_index];
+		contador_index++;
 
-		int y = paredes_lista.Combine_grids[contador_combine_grids];
-		contador_combine_grids++;
+		int y = paredes_lista.Index[contador_index];
+		contador_index++;
 
 		pos = new Vector3(x * 5f, 1f, y * 5f);
 
@@ -583,16 +601,17 @@ public class WebClient : MonoBehaviour
 		Debug.Log("CrearFuego");
 		Instantiate(destruirIP, pos, rotation, CarpetaVacia.transform);
 
-		contador_tamanio++;
+		contador_Size++;
 		LeerID();
 	}
 	public void CrearIP()
 	{
-		int x = paredes_lista.Combine_grids[contador_combine_grids];
-		contador_combine_grids++;
+		Debug.Log("CrearIP");
+		int x = paredes_lista.Index[contador_index];
+		contador_index++;
 
-		int y = paredes_lista.Combine_grids[contador_combine_grids];
-		contador_combine_grids++;
+		int y = paredes_lista.Index[contador_index];
+		contador_index++;
 
 		pos = new Vector3(x * 5f, 1f, y * 5f);
 
@@ -600,16 +619,17 @@ public class WebClient : MonoBehaviour
 		Quaternion rotation = Quaternion.Euler(rotationVector);
 		Instantiate(puntoInteres, pos, rotation, CarpetaVacia.transform);
 
-		contador_tamanio++;
+		contador_Size++;
 		LeerID();
 	}
 	public void DescubreIP()
 	{
-		int x = paredes_lista.Combine_grids[contador_combine_grids];
-		contador_combine_grids++;
+		Debug.Log("DescubreIP");
+		int x = paredes_lista.Index[contador_index];
+		contador_index++;
 
-		int y = paredes_lista.Combine_grids[contador_combine_grids];
-		contador_combine_grids++;
+		int y = paredes_lista.Index[contador_index];
+		contador_index++;
 
 		pos = new Vector3(x * 5f, 1f, y * 5f);
 
@@ -617,7 +637,7 @@ public class WebClient : MonoBehaviour
 		Quaternion rotation = Quaternion.Euler(rotationVector);
 		Instantiate(DescubrirIP, pos, rotation, CarpetaVacia.transform);
 
-		contador_tamanio++;
+		contador_Size++;
 		LeerID();
 	}
 	
@@ -629,8 +649,8 @@ public class WebClient : MonoBehaviour
  [System.Serializable]
 public class Class_Paredes
 {
-	public int[] Combine_grids;
+	public int[] Grids;
 	public int[] Index;
-	public int[] Tamanio;
+	public int[] Size;
 	public int[] ID;
 }

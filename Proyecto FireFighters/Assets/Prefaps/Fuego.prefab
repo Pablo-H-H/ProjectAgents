@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4660308970947934114}
   - component: {fileID: 4041972427630570009}
   - component: {fileID: 1581903477321961831}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Fuego
   m_TagString: Fuego
   m_Icon: {fileID: 0}
@@ -113,7 +113,7 @@ GameObject:
   - component: {fileID: 8270071605848426347}
   - component: {fileID: 5609900927132921935}
   - component: {fileID: 7631484907199619551}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4971,7 +4971,7 @@ GameObject:
   - component: {fileID: 595013268965953181}
   - component: {fileID: 6199618401251544363}
   - component: {fileID: 4800668197008355426}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Piece004 (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5069,7 +5069,7 @@ GameObject:
   - component: {fileID: 3680434784278531985}
   - component: {fileID: 2190106111022119870}
   - component: {fileID: 5792024198214168456}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Piece004 (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5167,7 +5167,7 @@ GameObject:
   - component: {fileID: 971238548746190555}
   - component: {fileID: 1162477762694979612}
   - component: {fileID: 7050534011059774933}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Piece004 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5265,7 +5265,7 @@ GameObject:
   - component: {fileID: 2354148341403898631}
   - component: {fileID: 6730100396079072762}
   - component: {fileID: 8015865270380075125}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Piece004
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5363,7 +5363,7 @@ GameObject:
   - component: {fileID: 1428278860439578600}
   - component: {fileID: 678108158700609255}
   - component: {fileID: 1105379764017083180}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Piece004 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
