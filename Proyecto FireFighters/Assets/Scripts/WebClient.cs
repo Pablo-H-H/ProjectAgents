@@ -49,7 +49,6 @@ public class WebClient : MonoBehaviour
 
 	GameObject CarpetaVacia;
 
-	int contador_steps;
 
 
 	Class_Paredes paredes_lista;
@@ -98,7 +97,6 @@ public class WebClient : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-		contador_steps = 0;
 		//string call = "What's up?";
 		Vector3 fakePos = new Vector3(3.44f, 0, -15.707f);
         string json = EditorJsonUtility.ToJson(fakePos);
@@ -278,6 +276,7 @@ public class WebClient : MonoBehaviour
 				}
 			}
 		}
+
 		LeerID();
 	}
 
@@ -329,11 +328,12 @@ public class WebClient : MonoBehaviour
 					if (paredes_lista.Grids[contador_Grids] == 3)
 					{
 						Debug.Log("CrearBombero");
+						Debug.Log(pos);
 						Instantiate(bombero, pos, rotation, CarpetaVacia.transform);
 					}
 					if (paredes_lista.Grids[contador_Grids] == 4 || paredes_lista.Grids[contador_Grids] == 5)
 					{
-						Debug.Log("CrearBombero");
+						Debug.Log("CrearPuntosInteres");
 						Instantiate(puntoInteres, pos, rotation, CarpetaVacia.transform);
 					}
 
@@ -343,20 +343,22 @@ public class WebClient : MonoBehaviour
 			}
 		}
 
-		contador_steps++;
+
 		LeerID();
 	}
 
 	public void CrearHumo()
 	{
-		Debug.Log("CrearHumo");
 		int x = paredes_lista.Index[contador_index];
-		contador_Grids++;
+		contador_index++;
 
 		int y = paredes_lista.Index[contador_index];
-		contador_Grids++;
+		contador_index++;
 
 		pos = new Vector3(x * 5f, 1f, y * 5f);
+
+		Debug.Log("CrearHumo");
+		Debug.Log(pos);
 
 		Vector3 rotationVector = new Vector3(270, 0, 0);
 		Quaternion rotation = Quaternion.Euler(rotationVector);
@@ -378,7 +380,7 @@ public class WebClient : MonoBehaviour
 
 		pos = new Vector3(x * 5f, 1f, y * 5f);
 
-		Vector3 rotationVector = new Vector3(270, 0, 0);
+		Vector3 rotationVector = new Vector3(0, 0, 0);
 		Quaternion rotation = Quaternion.Euler(rotationVector);
 		Debug.Log("CrearFuego");
 		Instantiate(fuego, pos, rotation, CarpetaVacia.transform);
