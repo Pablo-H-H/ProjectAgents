@@ -4,18 +4,7 @@ using UnityEngine;
 
 public class Destruir_Humo : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    //Detecta y destruye si tiene el Tag Humo
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Humo")

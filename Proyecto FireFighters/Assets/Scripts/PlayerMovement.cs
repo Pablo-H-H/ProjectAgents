@@ -4,21 +4,17 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-
-    public float runSpeed = 7;
-    public float rotateSpeed = 250;
+    [Header("Movimiento")]
     public int x_towards;
     public int y_towards;
+    public float runSpeed = 7;
     public bool movimiento = false;
 
-    public float res_x;
-    public float res_y;
-
+    [Header("Animador y RigidBody")]
     public Rigidbody rb;
     public Animator animator;
 
-    public float x, y;
-    // Start is called before the first frame update
+    // Obtenemos el RigidBody
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -27,22 +23,20 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        x = Input.GetAxis("Horizontal");
-        y = Input.GetAxis("Vertical");
-
-        transform.Translate(x * Time.deltaTime * runSpeed, 0, y * Time.deltaTime * runSpeed);
-
+        //Si esta en movimiento entonces nos movemos hacia la nueva posicion
         if (movimiento)
         {
             Vector3 objetivo = new Vector3(x_towards, 0, y_towards);
             var step = runSpeed * Time.deltaTime;
 
             transform.position = Vector3.MoveTowards(transform.position, objetivo, step);
-            res_x = transform.position.x - objetivo.x;
-            res_y = transform.position.y - objetivo.y;
+            float res_x = transform.position.x - objetivo.x;
+            float res_y = transform.position.y - objetivo.y;
 
             animator.SetFloat("VelX", res_x);
             animator.SetFloat("VelY", res_y);
+
+            //Cuando estemos en la posicion deseada entonces se para el movimiento y velocidad
             if (transform.position.x == x_towards && transform.position.y == y_towards)
             {
                 rb.velocity = new Vector3(0f, 0f, 0f);
@@ -52,6 +46,7 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    //Mandamos Animacion de Patear
     public void Pateando()
     {
         animator.SetTrigger("Patear");

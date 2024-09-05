@@ -4,26 +4,12 @@ using UnityEngine;
 
 public class DestruirIP : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+	//Detecta y destruye si tiene el Tag InterestPoint
 	void OnTriggerEnter(Collider other)
 	{
 		if (other.gameObject.tag == "InterestPoint")
 		{
 			Destroy(other.gameObject);
 		}
-
 	}
-
-
 }

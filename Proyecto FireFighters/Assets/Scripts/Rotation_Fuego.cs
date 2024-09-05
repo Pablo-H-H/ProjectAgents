@@ -7,30 +7,26 @@ using Debug = UnityEngine.Debug;
 
 public class Rotation_Fuego : MonoBehaviour
 {
-	// The target marker.
+	// Objetivo de rotacion
 	public GameObject target;
 
-	// Angular speed in radians per sec.
+	// Velocidad Angular
 	public float speed = 1.0f;
 
 	private Transform objetivo;
 
-	void Start()
-	{
-		objetivo = target.GetComponent<Transform>();
-	}
 
 	void Update()
 	{
 		objetivo = target.GetComponent<Transform>();
 
-		// The step size is equal to speed times frame time.
+		// El step es igual a la velocidad de cada frame.
 		float singleStep = speed * Time.deltaTime;
 
-		// Rotate the forward vector towards the objetivo direction by one step
+		// Se rota a la velocidad de cada step en el eje foward
 		Vector3 newDirection = Vector3.RotateTowards(transform.forward, objetivo.forward, singleStep, 0.0f);
 
-		// Calculate a rotation a step closer to the objetivo and applies rotation to this object
+		// Calcula una rotacion a un paso mas cercano a el objetivo y aplica la rotacion
 		transform.rotation = Quaternion.LookRotation(newDirection);
 	}
 

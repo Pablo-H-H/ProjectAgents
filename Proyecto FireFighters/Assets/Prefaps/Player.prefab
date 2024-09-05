@@ -376,18 +376,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ce6603e88903034ab7a5ba0233016da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  runSpeed: 7
-  rotateSpeed: 250
   x_towards: 0
   y_towards: 0
+  runSpeed: 10
   movimiento: 0
-  pateando: 0
-  res_x: 0
-  res_y: 0
   rb: {fileID: 0}
   animator: {fileID: 2208843077154581976}
-  x: 0
-  y: 0
 --- !u!4 &5208219214071789474 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 273d15ec79b82cd479ce648447ac5411, type: 3}

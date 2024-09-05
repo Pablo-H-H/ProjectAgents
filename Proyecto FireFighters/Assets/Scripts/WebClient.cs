@@ -13,35 +13,37 @@ using System.Linq;
 
 using Debug = UnityEngine.Debug;
 using System.Collections.Specialized;
+using System;
 
 public class WebClient : MonoBehaviour
 {
-
-	string jsonString;
-    public GameObject pared;
+	[Header("Paredes, puertas y entradas")]
+	public GameObject pared;
 	public GameObject paredDaniada;
 	public GameObject paredDestruida;
-	public GameObject puerta;
-	public GameObject amarillo;
-	public GameObject DescubrirIP;
+	public GameObject puerta;		
+	public GameObject puerta_entrada;
 
+	[Header("Bomberos y entorno")]
 	public GameObject humo;
 	public GameObject fuego;
 	public GameObject bombero;
-	public GameObject destruir_humo_fuego;
-
 	public GameObject puntoInteres;
-	public GameObject BomberoCarga;
-	public GameObject BomberoAtaca;
+
+	[Header("Bomberos y entorno")]
+	public GameObject Fin_Juego;
+	public GameObject VerMapa;
+
+	[Header("Triggers Entorno")]
+	public GameObject destruir_humo_fuego;
 	public GameObject destruirMuro;
+	public GameObject DescubrirIP;
 	public GameObject destruirIP;
-	public GameObject moverBombero;
 
+	[Header("Contadores, carpetas y Vector3")]
 	public GameObject Carpeta;
-	//public Quaternion rotacion;
-	public Vector3 pos;
-	int[,,] pos_Age;
 
+	public Vector3 pos;
 	public int contador_id = 0;
 	public int contador_Size = 0;
 	public int contador_index = 0;
@@ -49,6 +51,7 @@ public class WebClient : MonoBehaviour
 
 	GameObject CarpetaVacia;
 
+	[Header("Instanciamiento de Bomberos")]
 	public GameObject[] Bomberos = new GameObject[5];
 
 
@@ -71,26 +74,20 @@ public class WebClient : MonoBehaviour
             www.SetRequestHeader("Content-Type", "application/json");
 
             yield return www.SendWebRequest();          // Talk to Python
-            if (www.isNetworkError || www.isHttpError)
+            if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.Log(www.error);
             }
             else
             {
-				Debug.Log(www.downloadHandler.text.Replace('\'', '\"'));
-                jsonString = www.downloadHandler.text.Replace('\'', '\"');
+				//Le quitamos los espacios vacios para convertir a Json
+                string jsonString = www.downloadHandler.text.Replace('\'', '\"');
 
-
+				//Guardado del Json en la clase Class_Paredes
 				paredes_lista = JsonUtility.FromJson<Class_Paredes>(jsonString);
-
 				string paredes_string = JsonUtility.ToJson(paredes_lista);
 
-				//var resultado = (from lista in paredes_lista.Paredes select lista);
-
 				Invoke("LeerID", 1f);
-				
-				
-
 			}
 		}
 
@@ -99,187 +96,179 @@ public class WebClient : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-		//string call = "What's up?";
+		Fin_Juego.SetActive(false);
+		VerMapa.SetActive(false);
 		Vector3 fakePos = new Vector3(3.44f, 0, -15.707f);
         string json = EditorJsonUtility.ToJson(fakePos);
-        //StartCoroutine(SendData(call));
         StartCoroutine(SendData(json));
-        // transform.localPosition
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-	public void LeerID()
-    {
-		Debug.Log("Leer");
-		Debug.Log(paredes_lista.ID[contador_id]);
-		if(paredes_lista.ID[contador_id] == -1)
-        {
-			contador_id++;
-			Invoke("Generar_Paredes", 1f);
-        }
-		else if (paredes_lista.ID[contador_id] == -2)
-		{
-			contador_id++;
-			Invoke("Generar_BomberoYEntorno", 1f);
-		}
-		else if (paredes_lista.ID[contador_id] == -3)
-		{
-			contador_id++;
-			Invoke("Generar_Bomberos", 1f);
-		}
-		else if (paredes_lista.ID[contador_id] == 0)
-		{
-			contador_id++;
-			Invoke("CrearHumo", 1f);
-		}
-		else if (paredes_lista.ID[contador_id] == 1)
-		{
-			contador_id++;
-			Invoke("PrendeFuego", 1f);
-		}
-		else if (paredes_lista.ID[contador_id] == 2)
-		{
-			contador_id++;
-			Invoke("MoverBombero", 1f);
-		}
-		else if (paredes_lista.ID[contador_id] == 3)
-		{
-			contador_id++;
-			Invoke("ExtinguirFuegoHumo", 1f);
-		}
-		else if (paredes_lista.ID[contador_id] == 4)
-		{
-			contador_id++;
-			Invoke("ActualizarMuro", 1f);
-		}
-		else if (paredes_lista.ID[contador_id] == 5)
-		{
-			contador_id++;
-			Invoke("BomberoCargando", 1f);
-		}
-		else if (paredes_lista.ID[contador_id] == 6)
-		{
-			contador_id++;
-			Invoke("RomperUsar", 1f);
-		}
-		else if (paredes_lista.ID[contador_id] == 7)
-		{
-			contador_id++;
-			Invoke("EliminarIP", 1f);
-		}
-		else if (paredes_lista.ID[contador_id] == 8)
-		{
-			contador_id++;
-			Invoke("CrearIP", 1f);
-		}
-		else if (paredes_lista.ID[contador_id] == 9)
-		{
-			contador_id++;
-			Invoke("DescubreIP", 1f);
-		}
-
-
-
-
-
+		//Generamos una carpeta para instanciar los prefabs ahi
+		CarpetaVacia = Instantiate(Carpeta, transform.position, Quaternion.identity);
 	}
 
+	//Leemos el ID para identificar el evento al que corresponden las listas
+	public void LeerID()
+    {
+		try
+		{
+			if (paredes_lista.ID[contador_id] == -3)
+			{
+				contador_id++;
+				Invoke("Generar_Bomberos", 1f);
+			}
+			else if (paredes_lista.ID[contador_id] == -2)
+			{
+				contador_id++;
+				Invoke("Generar_Entorno", 1f);
+			}
+			else if (paredes_lista.ID[contador_id] == -1)
+			{
+				contador_id++;
+				Invoke("Generar_Paredes", 1f);
+			}
+			else if (paredes_lista.ID[contador_id] == 0)
+			{
+				contador_id++;
+				Invoke("CrearHumo", 1f);
+			}
+			else if (paredes_lista.ID[contador_id] == 1)
+			{
+				contador_id++;
+				Invoke("PrendeFuego", 1f);
+			}
+			else if (paredes_lista.ID[contador_id] == 2)
+			{
+				contador_id++;
+				Invoke("MoverBombero", 1f);
+			}
+			else if (paredes_lista.ID[contador_id] == 3)
+			{
+				contador_id++;
+				Invoke("ExtinguirFuegoHumo", 1f);
+			}
+			else if (paredes_lista.ID[contador_id] == 4)
+			{
+				contador_id++;
+				Invoke("ActualizarMuro", 1f);
+			}
+			else if (paredes_lista.ID[contador_id] == 5)
+			{
+				contador_id++;
+				Invoke("BomberoCargando", 1f);
+			}
+			else if (paredes_lista.ID[contador_id] == 6)
+			{
+				contador_id++;
+				Invoke("RomperUsar", 1f);
+			}
+			else if (paredes_lista.ID[contador_id] == 7)
+			{
+				contador_id++;
+				Invoke("EliminarIP", 1f);
+			}
+			else if (paredes_lista.ID[contador_id] == 8)
+			{
+				contador_id++;
+				Invoke("CrearIP", 1f);
+			}
+			else if (paredes_lista.ID[contador_id] == 9)
+			{
+				contador_id++;
+				Invoke("DescubreIP", 1f);
+			}
+		}
+		catch (Exception e)
+		{
+			Fin_Juego.SetActive(true);
+			VerMapa.SetActive(true);
+			print("Final del codigo");
+		}
+		
+	}
+
+	//Genera el escenario con las paredes, puertas y entradas
 	public void Generar_Paredes()
 	{
-		Debug.Log("Generar_Paredes");
-		CarpetaVacia = Instantiate(Carpeta, transform.position, Quaternion.identity);
+		//Creamos una lista que contiene el tamanio de la grid en eje x, y, & numero de esquinas
 		int[] lista_indices;
 		lista_indices = new int[paredes_lista.Size[contador_Size]];
 
 		for (int index = 0; index < ((paredes_lista.Size[contador_Size])); index++) {
 			lista_indices[index] = paredes_lista.Index[contador_index];
-			Debug.Log(contador_index);
 			contador_index++;
 		}
 		contador_Size++;
 
-		int pos_i;
-		pos_i = lista_indices[0];
-		Debug.Log(pos_i);
-		int val_paredes_i = pos_i;
+		//Numero de posiciones en y = 6
+		int val_paredes_i = lista_indices[0];
 
-		int pos_j;
-		pos_j = lista_indices[1];
-		Debug.Log(pos_j);			
-		int val_paredes_j = pos_j;
+		//Numero de posiciones en x = 8
+		int val_paredes_j = lista_indices[1];
 
-		int pos_k;
-		pos_k = lista_indices[2];
-		Debug.Log(pos_k);			
-		int val_paredes_k = pos_k;
+		//Numero de posibles esquinas para la pared = 4
+		int val_paredes_k = lista_indices[2];
 
+		//Se itera la grid entera en orden empezando por la esquina superior ezquierda
 		for (int i = 0; i < val_paredes_i; i++)
 		{
 			for (int j = 0; j < val_paredes_j; j++)
 			{
 				for (int k = 0; k < val_paredes_k; k++)
 				{
-
 					if (paredes_lista.Grids[contador_Grids] != 0)
 					{
-						pos = new Vector3(j * 5f, 1f, i * 5f);
-						//rotacion = Quaternion.Euler(0,0,0);
+
+						//Sacamos la rotacion del objeto
+						pos = new Vector3(j * 5f, 1f, i * 5f); //Se ajusta la posicion al entorno de Unity
 						float rotacionY = 0f;
 
 
 						if (k == 0)
 						{
+							//Arriba
 							rotacionY = 90f;
 							pos.z = pos.z - 2f;
 						}
-
-						if (k == 1)
+						else if (k == 1)
 						{
+							//Izquierda
 							rotacionY = 0f;
 							pos.x = pos.x - 2f;
 						}
-
-						if (k == 2)
+						else if (k == 2)
 						{
+							//Abajo
 							rotacionY = 90f;
 							pos.z = pos.z + 2f;
 						}
-
-						if (k == 3)
+						else if (k == 3)
 						{
+							//Derecha
 							rotacionY = 0f;
 							pos.x = pos.x + 2f;
 						}
 
+						//Instanciamos el objeto correspondiente al numero
 						Vector3 rotationVector = new Vector3(0, rotacionY, 0);
 						Quaternion rotation = Quaternion.Euler(rotationVector);
 
 						if (paredes_lista.Grids[contador_Grids] == 1)
 						{
+							//Pared
 							Instantiate(pared, pos, rotation, CarpetaVacia.transform);
-						}
-
-						if (paredes_lista.Grids[contador_Grids] == 6)
+                        }
+                        else if (paredes_lista.Grids[contador_Grids] == 4)
+                        {
+							///Puerta Casa
+                            Instantiate(puerta, pos, rotation, CarpetaVacia.transform);
+                        }
+                        else if (paredes_lista.Grids[contador_Grids] == 6)
 						{
-							Instantiate(puerta, pos, rotation, CarpetaVacia.transform);
+							//Puerta_Entrada
+							Instantiate(puerta_entrada, pos, rotation, CarpetaVacia.transform);
 						}
-
-						if (paredes_lista.Grids[contador_Grids] == 4)
-						{
-							Instantiate(amarillo, pos, rotation, CarpetaVacia.transform);
-						}
-
-
 					}
-
 					contador_Grids++;
-					Debug.Log(contador_Grids);
-
 				}
 			}
 		}
@@ -287,94 +276,72 @@ public class WebClient : MonoBehaviour
 		LeerID();
 	}
 
-	public void Generar_BomberoYEntorno()
+	public void Generar_Entorno()
 	{
-		Debug.Log("Generar_BomberoYEntorno");
-		int count = 0;
-
-		int contador_i;
-		contador_i = paredes_lista.Index[contador_index];
+		//Recorremos la matriz en orden para generar las entidades
+		int contador_i = paredes_lista.Index[contador_index];
 		contador_index++;
 
-		int contador_j;
-		contador_j = paredes_lista.Index[contador_index];
+		int contador_j = paredes_lista.Index[contador_index];
 		contador_index++;
 
 		contador_Size++;
-
-
 
 		for (int i = 0; i < contador_i; i++)
 		{
 			for (int j = 0; j < contador_j; j++)
 			{
-
-
 				if (paredes_lista.Grids[contador_Grids] != 0)
 				{
-					pos = new Vector3(j * 5f, 1f, i * 5f);
-					//rotacion = Quaternion.Euler(0,0,0);
+					pos = new Vector3(j * 5f, 1f, i * 5f); //Se ajusta la posicion al entorno de Unity
 
 					Vector3 rotationVector = new Vector3(0, 180, 0);
 					Quaternion rotation = Quaternion.Euler(rotationVector);
 
 					if (paredes_lista.Grids[contador_Grids] == 1)
 					{
+						//Humo
 						rotationVector = new Vector3(270, 0, 0);
 						rotation = Quaternion.Euler(rotationVector);
-						Debug.Log("CrearHumo");
 						Instantiate(humo, pos, rotation, CarpetaVacia.transform);
 					}
 
 					if (paredes_lista.Grids[contador_Grids] == 2)
 					{
-						Debug.Log("CrearFuego");
+						//Fuego
 						Instantiate(fuego, pos, rotation, CarpetaVacia.transform);
-					}
-
-					if (paredes_lista.Grids[contador_Grids] == 3)
-					{
-						Debug.Log("CrearBombero");
-						Debug.Log(pos);
-						Instantiate(bombero, pos, rotation, CarpetaVacia.transform);
 					}
 					if (paredes_lista.Grids[contador_Grids] == 4 || paredes_lista.Grids[contador_Grids] == 5)
 					{
+						//Puntos de Interes
 						Debug.Log("CrearPuntosInteres");
 						Instantiate(puntoInteres, pos, rotation, CarpetaVacia.transform);
 					}
-
 				}
-
 				contador_Grids++;
 			}
 		}
-
-
 		LeerID();
 	}
 
 	public void Generar_Bomberos()
     {
+		//Recuperamos los ejes e id del bombero a generar
 		int i= paredes_lista.Index[contador_index];
 		contador_index++;
 
 		int j = paredes_lista.Index[contador_index];
 		contador_index++;
 
-		int id = paredes_lista.Index[contador_index];
+		int id = paredes_lista.Index[contador_index]; //Son un total de 6 Bomberos
 		contador_index++;
 
-		pos = new Vector3(j * 5f, 1f, i * 5f);
-		//rotacion = Quaternion.Euler(0,0,0);
+		pos = new Vector3(j * 5f, 1f, i * 5f); //Se ajusta la posicion al entorno de Unity
 
 		Vector3 rotationVector = new Vector3(0, 180, 0);
 		Quaternion rotation = Quaternion.Euler(rotationVector);
 
-		Debug.Log(id);
-
-		Bomberos[id] = Instantiate(bombero, pos, rotation);
-		//"Bombero_" + id = Instantiate(bombero, pos, rotation, CarpetaVacia.transform);
+		Bomberos[id] = Instantiate(bombero, pos, rotation); //Se guarda la instancia en el arreglo de Bomberos
 
 		contador_Size++;
 		LeerID();
@@ -382,20 +349,18 @@ public class WebClient : MonoBehaviour
 
 	public void CrearHumo()
 	{
+		//Recuperamos los ejes del humo
 		int x = paredes_lista.Index[contador_index];
 		contador_index++;
 
 		int y = paredes_lista.Index[contador_index];
 		contador_index++;
 
-		pos = new Vector3(x * 5f, 1f, y * 5f);
+		pos = new Vector3(x * 5f, 1f, y * 5f); //Se ajusta la posicion al entorno de Unity
 
-		Debug.Log("CrearHumo");
-		Debug.Log(pos);
 
 		Vector3 rotationVector = new Vector3(270, 0, 0);
 		Quaternion rotation = Quaternion.Euler(rotationVector);
-		Debug.Log("CrearHumo");
 		Instantiate(humo, pos, rotation, CarpetaVacia.transform);
 
 		contador_Size++;
@@ -404,18 +369,17 @@ public class WebClient : MonoBehaviour
 
 	public void PrendeFuego()
 	{
-		Debug.Log("PrendeFuego");
+		//Recuperamos los ejes del fuego
 		int x = paredes_lista.Index[contador_index];
 		contador_index++;
 
 		int y = paredes_lista.Index[contador_index];
 		contador_index++;
 
-		pos = new Vector3(x * 5f, 1f, y * 5f);
+		pos = new Vector3(x * 5f, 1f, y * 5f); //Se ajusta la posicion al entorno de Unity
 
 		Vector3 rotationVector = new Vector3(0, 0, 0);
 		Quaternion rotation = Quaternion.Euler(rotationVector);
-		Debug.Log("CrearFuego");
 		Instantiate(fuego, pos, rotation, CarpetaVacia.transform);
 
 		contador_Size++;
@@ -424,26 +388,17 @@ public class WebClient : MonoBehaviour
 
 	public void MoverBombero()
     {
-		Debug.Log("MoverBombero");
-		/* Posicion Original
-		int x = paredes_lista.Index[contador_index];
+		//Recuperamos los ejes del movimiento del Bombero y su id
+		int x_move = paredes_lista.Index[contador_index] * 5; //Se ajusta la posicion al entorno de Unity
 		contador_index++;
 
-		int y = paredes_lista.Index[contador_index];
-		contador_index++;
-		*/
-
-
-		int x_move = paredes_lista.Index[contador_index] * 5;
-		contador_index++;
-
-		int y_move = paredes_lista.Index[contador_index] * 5;
+		int y_move = paredes_lista.Index[contador_index] * 5; //Se ajusta la posicion al entorno de Unity
 		contador_index++;
 
 		int id = paredes_lista.Index[contador_index];
 		contador_index++;
 
-		PlayerMovement script_Bomberos = Bomberos[id].GetComponent<PlayerMovement>();
+		PlayerMovement script_Bomberos = Bomberos[id].GetComponent<PlayerMovement>(); //Pasamos los ejes al bombero
 		script_Bomberos.x_towards = x_move;
 		script_Bomberos.y_towards = y_move;
 		script_Bomberos.movimiento = true;
@@ -454,18 +409,18 @@ public class WebClient : MonoBehaviour
 
 	public void ExtinguirFuegoHumo()
 	{
-		Debug.Log("ExtinguirFuegoHumo");
+		//Recuperamos los ejes del fuego a extinguir
 		int x = paredes_lista.Index[contador_index];
 		contador_index++;
 
 		int y = paredes_lista.Index[contador_index];
 		contador_index++;
 
-		pos = new Vector3(x * 5f, 1f, y * 5f);
+		pos = new Vector3(x * 5f, 1f, y * 5f); //Se ajusta la posicion al entorno de Unity
 
 		Vector3 rotationVector = new Vector3(0, 0, 0);
 		Quaternion rotation = Quaternion.Euler(rotationVector);
-		Instantiate(destruir_humo_fuego, pos, rotation, CarpetaVacia.transform);
+		Instantiate(destruir_humo_fuego, pos, rotation, CarpetaVacia.transform); //destruir_humo elimina el fuego/humo y se autodestruye
 
 		contador_Size++;
 		LeerID();
@@ -473,55 +428,40 @@ public class WebClient : MonoBehaviour
 
 	public void ActualizarMuro()
 	{
-		Debug.Log("ActualizarMuro");
+		//Recuperamos los ejes de la pared y su id de rotacion
 		int x = paredes_lista.Index[contador_index];
-
 		int y = paredes_lista.Index[contador_index + 1];
-
 		int k = paredes_lista.Index[contador_index + 2];
 
-		pos = new Vector3(x * 5f, 1f, y * 5f);
+		pos = new Vector3(x * 5f, 1f, y * 5f); //Se ajusta la posicion al entorno de Unity
 
-		//rotacion = Quaternion.Euler(0,0,0);
-		float rotacionY = 0f;
-
-
+		//Sacamos el desplazamiento del objeto
 		if (k == 0)
 		{
-			rotacionY = 90f;
 			pos.z = pos.z - 2f;
 		}
-
-		if (k == 1)
+		else if (k == 1)
 		{
-			rotacionY = 0f;
 			pos.x = pos.x - 2f;
 		}
-
-		if (k == 2)
+		else if (k == 2)
 		{
-			rotacionY = 90f;
 			pos.z = pos.z + 2f;
 		}
-
-		if (k == 3)
+		else if (k == 3)
 		{
-			rotacionY = 0f;
 			pos.x = pos.x + 2f;
 		}
 
-
-		Vector3 rotationVector = new Vector3(0, 0, 0);
-		Quaternion rotation = Quaternion.Euler(rotationVector);
-		Debug.Log("CrearDestructor");
-		Instantiate(destruirMuro, pos, rotation, CarpetaVacia.transform);
+		//destruirMuro elimina la pared/puerta y se autodestruye
+		Instantiate(destruirMuro, pos, Quaternion.identity, CarpetaVacia.transform); 
 
 		Invoke("ConstruirMuro", 0.2f);
 	}
 
 	public void ConstruirMuro()
     {
-		Debug.Log("ConstruirMuro");
+		//Recuperamos los ejes de la pared, id de rotacion y vida
 		int x = paredes_lista.Index[contador_index];
 		contador_index++;
 
@@ -534,31 +474,28 @@ public class WebClient : MonoBehaviour
 		int vidas = paredes_lista.Index[contador_index];
 		contador_index++;
 
-		pos = new Vector3(x * 5f, 1f, y * 5f);
+		pos = new Vector3(x * 5f, 1f, y * 5f); //Se ajusta la posicion al entorno de Unity
 
-		//rotacion = Quaternion.Euler(0,0,0);
+
 		float rotacionY = 0f;
 
-
+		//Sacamos el desplazamiento y rotacion del objeto
 		if (k == 0)
 		{
 			rotacionY = 90f;
 			pos.z = pos.z - 2f;
 		}
-
-		if (k == 1)
+		else if (k == 1)
 		{
 			rotacionY = 0f;
 			pos.x = pos.x - 2f;
 		}
-
-		if (k == 2)
+		else if (k == 2)
 		{
 			rotacionY = 90f;
 			pos.z = pos.z + 2f;
 		}
-
-		if (k == 3)
+		else if (k == 3)
 		{
 			rotacionY = 0f;
 			pos.x = pos.x + 2f;
@@ -568,7 +505,7 @@ public class WebClient : MonoBehaviour
 		Quaternion rotation = Quaternion.Euler(rotationVector);
 
 
-		Debug.Log("CrearDestructor");
+		//Dependiendo de la vida se genera el muro Daniado o Destruido
 		if(vidas == 2)
         {
 			Instantiate(paredDaniada, pos, rotation, CarpetaVacia.transform);
@@ -584,20 +521,20 @@ public class WebClient : MonoBehaviour
 
 	public void BomberoCargando()
 	{
-		Debug.Log("BomberoCargando");
-
+		//Recuperamos la id del bombero
 		int id = paredes_lista.Index[contador_index];
 		contador_index++;
 
+		//Activamos/Desactivamos a su hijo Victima dependiendo del estado
 		GameObject playerRescued = Bomberos[id].transform.GetChild(0).gameObject;
 		if (playerRescued.GetComponent<Activado>().estado_Activado == 0)
 		{
 			playerRescued.SetActive(true);
-			playerRescued.GetComponent<Activado>().cambiarEstado();
+			playerRescued.GetComponent<Activado>().estado_Activado = 1;
 		}
 		else
 		{
-			playerRescued.GetComponent<Activado>().cambiarEstado();
+			playerRescued.GetComponent<Activado>().estado_Activado = 0;
 			playerRescued.SetActive(false);
 		}
 
@@ -607,11 +544,11 @@ public class WebClient : MonoBehaviour
 
 	public void RomperUsar()
 	{
-		Debug.Log("RomperUsar");
-
+		//Recuperamos la id del bombero
 		int id = paredes_lista.Index[contador_index];
 		contador_index++;
 
+		//Activamos el trigger de la animacion de pateando
 		Bomberos[id].GetComponent<PlayerMovement>().Pateando();
 
 		contador_Size++;
@@ -620,18 +557,19 @@ public class WebClient : MonoBehaviour
 
 	public void EliminarIP()
 	{
-		Debug.Log("EliminarIP");
+		//Recuperamos los ejes del IP a eliminar
 		int x = paredes_lista.Index[contador_index];
 		contador_index++;
 
 		int y = paredes_lista.Index[contador_index];
 		contador_index++;
 
-		pos = new Vector3(x * 5f, 1f, y * 5f);
+		pos = new Vector3(x * 5f, 1f, y * 5f); //Se ajusta la posicion al entorno de Unity
 
 		Vector3 rotationVector = new Vector3(0, 0, 0);
 		Quaternion rotation = Quaternion.Euler(rotationVector);
-		Debug.Log("CrearFuego");
+
+		//destruirIP elimina el IP y se autodestruye
 		Instantiate(destruirIP, pos, rotation, CarpetaVacia.transform);
 
 		contador_Size++;
@@ -639,17 +577,18 @@ public class WebClient : MonoBehaviour
 	}
 	public void CrearIP()
 	{
-		Debug.Log("CrearIP");
+		//Recuperamos los ejes del IP
 		int x = paredes_lista.Index[contador_index];
 		contador_index++;
 
 		int y = paredes_lista.Index[contador_index];
 		contador_index++;
 
-		pos = new Vector3(x * 5f, 1f, y * 5f);
+		pos = new Vector3(x * 5f, 1f, y * 5f); //Se ajusta la posicion al entorno de Unity
 
 		Vector3 rotationVector = new Vector3(0, 0, 0);
 		Quaternion rotation = Quaternion.Euler(rotationVector);
+
 		Instantiate(puntoInteres, pos, rotation, CarpetaVacia.transform);
 
 		contador_Size++;
@@ -657,27 +596,25 @@ public class WebClient : MonoBehaviour
 	}
 	public void DescubreIP()
 	{
-		Debug.Log("DescubreIP");
+		//Recuperamos los ejes del IP a descubrir
 		int x = paredes_lista.Index[contador_index];
 		contador_index++;
 
 		int y = paredes_lista.Index[contador_index];
 		contador_index++;
 
-		pos = new Vector3(x * 5f, 1f, y * 5f);
+		pos = new Vector3(x * 5f, 1f, y * 5f); //Se ajusta la posicion al entorno de Unity
 
 		Vector3 rotationVector = new Vector3(0, 0, 0);
 		Quaternion rotation = Quaternion.Euler(rotationVector);
+
+		//Se crea el efecto de Victima
 		Instantiate(DescubrirIP, pos, rotation, CarpetaVacia.transform);
 
 		contador_Size++;
 		LeerID();
 	}
-	
-
 }
-
-
 
  [System.Serializable]
 public class Class_Paredes

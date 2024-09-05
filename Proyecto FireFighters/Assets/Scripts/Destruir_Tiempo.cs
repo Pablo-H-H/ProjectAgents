@@ -4,18 +4,13 @@ using UnityEngine;
 
 public class Destruir_Tiempo : MonoBehaviour
 {
+    //Se autodestruye despues del tiempo asignado
 
     public float tiempo;
     // Start is called before the first frame update
     void Start()
     {
         Invoke("Autodestruir", tiempo);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void Autodestruir()

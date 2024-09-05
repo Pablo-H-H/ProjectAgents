@@ -4,18 +4,7 @@ using UnityEngine;
 
 public class DestructorPared : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    //Detecta y destruye si tiene el Tag Pared
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Pared")
