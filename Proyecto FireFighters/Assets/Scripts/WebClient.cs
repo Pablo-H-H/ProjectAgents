@@ -110,7 +110,11 @@ public class WebClient : MonoBehaviour
 	public void LeerID()
     {
 		try
+			
 		{
+			Debug.Log("Paso");
+			Debug.Log(paredes_lista.ID[contador_id]);
+
 			if (paredes_lista.ID[contador_id] == -3)
 			{
 				contador_id++;
@@ -397,6 +401,10 @@ public class WebClient : MonoBehaviour
 
 		int id = paredes_lista.Index[contador_index];
 		contador_index++;
+
+		Debug.Log(x_move);
+		Debug.Log(y_move);
+		Debug.Log(id);
 
 		PlayerMovement script_Bomberos = Bomberos[id].GetComponent<PlayerMovement>(); //Pasamos los ejes al bombero
 		script_Bomberos.x_towards = x_move;
