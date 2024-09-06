@@ -17,8 +17,13 @@ dict = {
     "Grids" : model.combineGrids,
     "Index" : toList(model.index),
     "Size"  : model.size,
-    "ID"    : model.ID
+    "ID"    : model.ID,
+    "countDamage" : model.damage_markers,
+    "countDead" : model.lost_victims,
+    "countSaved" : model.saved_victims
 }
+
+print(f"{dict}")
 
 model_grids = model.datacollector.get_model_vars_dataframe()
 

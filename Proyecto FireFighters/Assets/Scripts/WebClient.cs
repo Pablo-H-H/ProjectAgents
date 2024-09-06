@@ -331,10 +331,10 @@ public class WebClient : MonoBehaviour
 	public void Generar_Bomberos()
     {
 		//Recuperamos los ejes e id del bombero a generar
-		int i= paredes_lista.Index[contador_index];
+		int j= paredes_lista.Index[contador_index];
 		contador_index++;
 
-		int j = paredes_lista.Index[contador_index];
+		int i = paredes_lista.Index[contador_index];
 		contador_index++;
 
 		int id = paredes_lista.Index[contador_index]; //Son un total de 6 Bomberos
@@ -393,10 +393,10 @@ public class WebClient : MonoBehaviour
 	public void MoverBombero()
     {
 		//Recuperamos los ejes del movimiento del Bombero y su id
-		int x_move = paredes_lista.Index[contador_index] * 5; //Se ajusta la posicion al entorno de Unity
+		int y_move = paredes_lista.Index[contador_index] * 5; //Se ajusta la posicion al entorno de Unity
 		contador_index++;
 
-		int y_move = paredes_lista.Index[contador_index] * 5; //Se ajusta la posicion al entorno de Unity
+		int x_move = paredes_lista.Index[contador_index] * 5; //Se ajusta la posicion al entorno de Unity
 		contador_index++;
 
 		int id = paredes_lista.Index[contador_index];

@@ -103,7 +103,6 @@ def shockWave(model,x,y,nX,nY):
                     model.index.append([x, y, i, model.walls[y][x][i].item()])
                     model.size.append(4)
                     model.ID.append(4)
-                    model.points_marker -= 1
                     if (0 <= x + dirX[i] < model.width) and (0 <= y + dirY[i] < model.height):
                         model.walls[y + dirY[i]][x + dirX[i]][opposite] += 1 # Destroy in opposite
                         model.index.append([x + dirX[i], y + dirY[i], opposite, model.walls[y + dirY[i]][x + dirX[i]][opposite].item()])
@@ -121,7 +120,6 @@ def shockWave(model,x,y,nX,nY):
                     model.index.append([x, y, i, 3])
                     model.size.append(4)
                     model.ID.append(4)
-                    model.points_marker -= 1
                     if (0 <= x + dirX[i] < model.width) and (0 <= y + dirY[i] < model.height):
                         model.walls[y + dirY[i]][x + dirX[i]][opposite] = 3 # Destroy in opposite
                         model.index.append([x + dirX[i], y + dirY[i], opposite, 3])
@@ -139,7 +137,6 @@ def shockWave(model,x,y,nX,nY):
                     model.index.append([x, y, i, 3])
                     model.size.append(4)
                     model.ID.append(4)
-                    model.points_marker -= 1
                     if (0 <= x + dirX[i] < model.width) and (0 <= y + dirY[i] < model.height):
                         model.walls[y + dirY[i]][x + dirX[i]][opposite] = 3 # Destroy in opposite
                         model.index.append([x + dirX[i], y + dirY[i], opposite, 3])

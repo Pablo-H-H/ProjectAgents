@@ -13,16 +13,19 @@ class fireModel(Model):
         self.width = W
         self.grid = MultiGrid(self.width,self.height,torus=False)
         self.schedule = BaseScheduler(self)
+        self.currAgent = 0
         self.walls, self.points, self.smoke = ReadLevel(filename=file)
         self.datacollector = DataCollector(model_reporters={"Grid":get_grid})
+
         self.combineGrids = []
         self.index = []
         self.size = []
         self.ID = []
+
         self.cost_dict = {
             0: 0,  # No hay obstáculo
-            1: 4,  # Pared
-            2: 2,  # Pared dañada
+            1: 8,  # Pared
+            2: 4,  # Pared dañada
             3: 0,  # Pared o puerta rota
             4: 1,  # Puerta cerrada
             5: 0,   # Puerta abierta
@@ -50,20 +53,18 @@ class fireModel(Model):
         self.size.append(2)
         self.ID.append(-2)
 
-        self.combineGrids = toList(self.combineGrids)
-
         for i in range(numAgents):
             start = [cell for cell in self.mapCoords if np.any(self.walls[cell[1]][cell[0]] == 6)]
             agent = FireFighter(i, self)
-            lugar = random.choice(start)
-            self.grid.place_agent(agent, lugar)
+            startLoc = random.choice(start)
+            self.grid.place_agent(agent,startLoc)
             self.schedule.add(agent)
-            self.index.append(lugar[1])
-            self.index.append(lugar[0])
-            self.index.append(i)
-            self.size.append(2)
+
+            self.index.append([startLoc[0],startLoc[1],i])
+            self.size.append(3)
             self.ID.append(-3)
 
+        self.combineGrids = toList(self.combineGrids)
 
     def get_wall_direction(self, current_node, neighbor):
             x, y = current_node
@@ -107,28 +108,30 @@ class fireModel(Model):
     
     def step(self):
         print(f"\n--- Step {self.schedule.steps + 1} ---")
-
         self.graph = self.create_graph()
-        for agent in self.schedule.agents:
-            agent.step()  # Cada bombero realiza su turno completo
-            # Después de cada turno de un bombero, el mapa se actualiza
-            smokePlace(self)
-            self.graph = self.create_graph()
-            # Verificar condiciones de victoria y derrota
-            if self.saved_victims >= 7:
-                print("¡Victoria! Se han rescatado suficientes víctimas.")
-                self.model_is_running = False
-                break 
-            elif self.lost_victims >= 4 or self.damage_markers >= 24:
-                print("Derrota. El edificio ha colapsado o se han perdido demasiadas víctimas.")
-                self.model_is_running = False
-                break
+
+        agent = self.schedule.agents[self.currAgent]
+        agent.step()
+        smokePlace(self)
+
+        if self.saved_victims >= 7:
+            print(f"¡Victoria! Se hand rescatado suficientes victimas")
+            self.model_is_running = False
+        elif self.lost_victims >= 4 or self.damage_markers >= 24:
+            print("Derrota. El edificio ha colapsado o se han perdido demasiadas víctimas.")
+            self.model_is_running = False
 
         print(f"Estado después del Step {self.schedule.steps + 1}:")
         print(f"Víctimas rescatadas: {self.saved_victims}")
         print(f"Víctimas perdidas: {self.lost_victims}")
         print(f"Marcadores de daño: {self.damage_markers}")
+
         self.datacollector.collect(self)
+
+        if self.currAgent == 5:
+            self.currAgent = 0
+        else: self.currAgent += 1
+
         self.schedule.steps += 1
 
 
@@ -142,16 +145,16 @@ def get_grid(model):
             elif model.smoke[y][x] == 2:
                 grid[y][x] = 2  # Fire
 
-    for agent in model.schedule.agents:
-        x, y = agent.pos
-        grid[y][x] = 3  # Bombero
-
     for y in range(model.height):
         for x in range(model.width):
             if model.points[y][x] == 1:
-                grid[y][x] = 4  # Victim
+                grid[y][x] = 3  # Victim
             elif model.points[y][x] == 2:
-                grid[y][x] = 5  # False Alarm
+                grid[y][x] = 4  # False Alarm
+    
+    # for agent in model.schedule.agents:
+    #     x, y = agent.pos
+    #     grid[y][x] = 5  # Bombero
 
     return grid
 
