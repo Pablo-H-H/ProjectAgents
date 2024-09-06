@@ -6,6 +6,12 @@ from MultiAgentes.FireBehaviours import smokePlace
 from MultiAgentes.FireFighters import FireFighter
 from MultiAgentes.toList import toList
 
+Wins = []
+Losses = []
+Steps_Per_Game = []
+Steps_Per_Win = []
+Steps_Per_Loss = []
+
 class fireModel(Model):
     def __init__(self,file,W,H,numAgents):
         super().__init__()
@@ -107,6 +113,11 @@ class fireModel(Model):
     
     
     def step(self):
+        global Wins
+        global Losses
+        global Steps_Per_Game
+        global Steps_Per_Loss
+        global Steps_Per_Win
         print(f"\n--- Step {self.schedule.steps + 1} ---")
         self.graph = self.create_graph()
 
@@ -117,9 +128,15 @@ class fireModel(Model):
         if self.saved_victims >= 7:
             print(f"¡Victoria! Se hand rescatado suficientes victimas")
             self.model_is_running = False
+            Wins.append(1)
+            Steps_Per_Game.append(self.schedule.steps)
+            Steps_Per_Win.append(self.schedule.steps)
         elif self.lost_victims >= 4 or self.damage_markers >= 24:
             print("Derrota. El edificio ha colapsado o se han perdido demasiadas víctimas.")
             self.model_is_running = False
+            Losses.append(1)
+            Steps_Per_Game.append(self.schedule.steps)
+            Steps_Per_Loss.append(self.schedule.steps)
 
         print(f"Estado después del Step {self.schedule.steps + 1}:")
         print(f"Víctimas rescatadas: {self.saved_victims}")
