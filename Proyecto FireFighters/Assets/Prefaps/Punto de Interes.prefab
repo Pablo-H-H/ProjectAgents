@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6425366168922226030}
   - component: {fileID: 8369108235034157541}
   - component: {fileID: 3371982834041796799}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Punto de Interes
   m_TagString: InterestPoint
   m_Icon: {fileID: 0}

@@ -25,7 +25,7 @@ def smokePlace(model):
             else:
                 print(f"Falsa alarma perdida en ({x}, {y})")
             model.points_marker -= 1
-            model.points[y][x] = 0;
+            model.points[y][x] = 0
 
             model.index.append([x,y])
             model.size.append(2)

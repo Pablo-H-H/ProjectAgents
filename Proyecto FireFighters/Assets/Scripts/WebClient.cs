@@ -315,7 +315,7 @@ public class WebClient : MonoBehaviour
 						//Fuego
 						Instantiate(fuego, pos, rotation, CarpetaVacia.transform);
 					}
-					if (paredes_lista.Grids[contador_Grids] == 4 || paredes_lista.Grids[contador_Grids] == 5)
+					if (paredes_lista.Grids[contador_Grids] == 4 || paredes_lista.Grids[contador_Grids] == 5 || paredes_lista.Grids[contador_Grids] == 3)
 					{
 						//Puntos de Interes
 						Debug.Log("CrearPuntosInteres");
@@ -393,10 +393,10 @@ public class WebClient : MonoBehaviour
 	public void MoverBombero()
     {
 		//Recuperamos los ejes del movimiento del Bombero y su id
-		int y_move = paredes_lista.Index[contador_index] * 5; //Se ajusta la posicion al entorno de Unity
+		int x_move = paredes_lista.Index[contador_index] * 5; //Se ajusta la posicion al entorno de Unity
 		contador_index++;
 
-		int x_move = paredes_lista.Index[contador_index] * 5; //Se ajusta la posicion al entorno de Unity
+		int y_move = paredes_lista.Index[contador_index] * 5; //Se ajusta la posicion al entorno de Unity
 		contador_index++;
 
 		int id = paredes_lista.Index[contador_index];

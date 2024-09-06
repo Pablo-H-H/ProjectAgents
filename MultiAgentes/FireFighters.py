@@ -332,9 +332,9 @@ class FireFighter(Agent):
                             self.model.ID.append(9)
 
                             # Eliminar el punto en el modelo UNITY
-                            self.model.index.append(self.unique_id)
-                            self.model.size.append(1)
-                            self.model.ID.append(5)
+                            self.model.index.append([self.pos[0],self.pos[1]])
+                            self.model.size.append(2)
+                            self.model.ID.append(7)
 
                             # Cargar a la victima
                             self.model.index.append(self.unique_id)
@@ -347,9 +347,9 @@ class FireFighter(Agent):
                             respawn_points_of_interest(self.model)
 
                             # Eliminar el punto en el modelo UNITY
-                            self.model.index.append(self.unique_id)
-                            self.model.size.append(1)
-                            self.model.ID.append(5)
+                            self.model.index.append([self.pos[0],self.pos[1]])
+                            self.model.size.append(2)
+                            self.model.ID.append(7)
 
                     self.target = None
                     self.way = []
